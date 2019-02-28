@@ -9,7 +9,7 @@ class EmailReader():
 
     def __init__(self):
         self.SCOPE = "https://mail.google.com/"
-        self.CLIENT_SECRET = "../ASTRING"
+        self.CLIENT_SECRET = "../client_secret.json"
         self.API_SERVICE_NAME = "gmail"
         self.API_VERSION = "v1"
 
