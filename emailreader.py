@@ -20,7 +20,7 @@ class EmailReader():
         self._service = None
 
         self.service = self._get_authenticated_service()
-        print("test")
+
 
     def _get_authenticated_service(self):
         flow = InstalledAppFlow.from_client_secrets_file(
@@ -32,6 +32,20 @@ class EmailReader():
             open_browser=True)
         return build(self.API_SERVICE_NAME,
             self.API_VERSION, credentials=credentials)
+
+    #Test
+    def readMail(self):
+        results = self.service.users().messages().list(userId="me",
+            labelIds = ["INBOX"]).execute()
+        messages = results.get("messages",[])
+
+        if not messages:
+            print("No messages found.")
+        else:
+            print("Message snippets:")
+            for message in messages:
+                msg = self.service.users().messages().get(userId='me', id=message['id']).execute()
+                print(msg['snippet'] + "\n")
 
     #===========================================================================
     # get
@@ -69,3 +83,4 @@ class EmailReader():
 
 if __name__ == "__main__":
     er = EmailReader()
+    er.readMail()
