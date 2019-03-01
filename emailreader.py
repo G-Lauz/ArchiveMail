@@ -1,16 +1,11 @@
 # -*-coding:Latin-1 -*
 from getpass import getpass
+import imaplib as imap
 
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
-import base64
-import imaplib as imap
-import json
-#from optparse import OptionParser
-#import smtplib
-#import sys
-import urllib
+from oauth2 import *
 
 class GmailReader():
 
@@ -27,7 +22,7 @@ class GmailReader():
         self._service = None
 
         self.service = self._get_authenticated_service()
-        
+
 
     def _get_authenticated_service(self):
         flow = InstalledAppFlow.from_client_secrets_file(
