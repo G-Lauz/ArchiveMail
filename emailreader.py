@@ -8,24 +8,29 @@ from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
+import base64
+
+#9h à 10h30
 class GmailReader():
 
     def __init__(self):
-        self._SCOPES = [
-        "https://www.googleapis.com/auth/gmail.readonly",
-        "https://www.googleapis.com/auth/gmail.labels",
-        "https://www.googleapis.com/auth/gmail.insert"
-        ]
+        #Supprimer le fichier token.pickle si on change le scopes
+        self._SCOPES = ["https://mail.google.com/"]
         self._CLIENT_SECRET = "../client_secret.json"
         self._API_SERVICE_NAME = "gmail"
         self._API_VERSION = "v1"
 
         self._credentials = None
         self._service = None
+        self._mail = None
+        self._user = None
 
-        self.service = self._get_authenticated_service()
+        self.user = input("Username: ")
+        self._get_authenticated()
+        self._imap_connection()
 
-    def _get_authenticated_service(self):
+
+    def _get_authenticated(self):
         if os.path.exists('../token.pickle'):
             with open('../token.pickle', 'rb') as token:
                 self.credentials = pickle.load(token)
@@ -45,22 +50,13 @@ class GmailReader():
                 with open('../token.pickle', 'wb') as token:
                     pickle.dump(self.credentials, token)
         #Changer?
-        return build(self.API_SERVICE_NAME,
-            self.API_VERSION, credentials=self.credentials)
+        #return build(self.API_SERVICE_NAME,
+            #self.API_VERSION, credentials=self.credentials)
 
-    #Test
-    def readMail(self):
-        results = self.service.users().messages().list(userId="me",
-            labelIds = ["INBOX"]).execute()
-        messages = results.get("messages",[])
-
-        if not messages:
-            print("No messages found.")
-        else:
-            print("Message snippets:")
-
-            msg = self.service.users().messages().get(userId='me', id=messages[0]['id'],format="full").execute()
-            print(msg)
+    def _imap_connection(self):
+        auth_string = 'user=%s\1auth=Bearer %s\1\1' % (self.user, self.credentials.token)
+        self.mail = imap.IMAP4_SSL('imap.gmail.com')
+        self.mail.authenticate('XOAUTH2', lambda x: auth_string)
 
     #===========================================================================
     # get
@@ -83,6 +79,12 @@ class GmailReader():
     def _get_credentials(self):
         return self._credentials
 
+    def _get_mail(self):
+        return self._mail
+
+    def _get_user(self):
+        return self._user
+
     #===========================================================================
     # set
     #===========================================================================
@@ -91,6 +93,12 @@ class GmailReader():
 
     def _set_credentials(self, credentials):
         self._credentials = credentials
+
+    def _set_mail(self, mail):
+        self._mail = mail
+
+    def _set_user(self, user):
+        self._user = user
 
     #===========================================================================
     # Propriété
@@ -102,7 +110,9 @@ class GmailReader():
 
     service = property(fget=_get_service, fset=_set_service)
     credentials = property(fget=_get_credentials, fset=_set_credentials)
+    mail = property(fget=_get_mail, fset=_set_mail)
+    user = property(fget=_get_user, fset=_set_user)
 
 if __name__ == "__main__":
     er = GmailReader()
-    er.readMail()
+    #er.readMail()
