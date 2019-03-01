@@ -1,11 +1,18 @@
 # -*-coding:Latin-1 -*
-import imaplib as imap
 from getpass import getpass
 
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
-class EmailReader():
+import base64
+import imaplib as imap
+import json
+#from optparse import OptionParser
+#import smtplib
+#import sys
+import urllib
+
+class GmailReader():
 
     def __init__(self):
         self._SCOPES = [
@@ -20,7 +27,7 @@ class EmailReader():
         self._service = None
 
         self.service = self._get_authenticated_service()
-
+        
 
     def _get_authenticated_service(self):
         flow = InstalledAppFlow.from_client_secrets_file(
@@ -30,6 +37,7 @@ class EmailReader():
             authorization_prompt_message='Redirection...',
             success_message="""L'authentification est terminer vous pouvez fermer cette page""",
             open_browser=True)
+        print("Credentials: ",credentials, type(credentials))
         return build(self.API_SERVICE_NAME,
             self.API_VERSION, credentials=credentials)
 
@@ -43,9 +51,9 @@ class EmailReader():
             print("No messages found.")
         else:
             print("Message snippets:")
-            for message in messages:
-                msg = self.service.users().messages().get(userId='me', id=message['id']).execute()
-                print(msg['snippet'] + "\n")
+
+            msg = self.service.users().messages().get(userId='me', id=messages[0]['id'],format="full").execute()
+            print(msg)
 
     #===========================================================================
     # get
@@ -82,5 +90,5 @@ class EmailReader():
     service = property(fget=_get_service, fset=_set_service)
 
 if __name__ == "__main__":
-    er = EmailReader()
-    er.readMail()
+    er = GmailReader()
+    #er.readMail()
