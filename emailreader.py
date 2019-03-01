@@ -26,37 +26,44 @@ class GmailReader():
         self._user = None
 
         self.user = input("Username: ")
-        self._get_authenticated()
-        self._imap_connection()
+        self.credentials = self._get_authenticated()
+        self.mail = self._imap_connection()
 
 
     def _get_authenticated(self):
+        credentials = None
         if os.path.exists('../token.pickle'):
             with open('../token.pickle', 'rb') as token:
-                self.credentials = pickle.load(token)
+                credentials = pickle.load(token)
         #Login si il n'y a pas d'indentifiant valide
-        if not self.credentials or not self.credentials.valid:
-            if self.credentials and self.credentials.expired and self.credentials.refresh_token:
-                self.credentials.refresh(Request())
+        if not credentials or not credentials.valid:
+            if credentials and credentials.expired and credentials.refresh_token:
+                credentials.refresh(Request())
             else:
                 flow = InstalledAppFlow.from_client_secrets_file(
                     self.CLIENT_SECRET,  scopes=self.SCOPES)
-                self.credentials = flow.run_local_server(host='localhost',
+                credentials = flow.run_local_server(host='localhost',
                     port=8080,
                     authorization_prompt_message='Redirection...',
                     success_message="""L'authentification est terminer vous pouvez fermer cette page""",
                     open_browser=True)
                 #Enregistrer l'identifiant pour la prochaine exécution
                 with open('../token.pickle', 'wb') as token:
-                    pickle.dump(self.credentials, token)
-        #Changer?
-        #return build(self.API_SERVICE_NAME,
-            #self.API_VERSION, credentials=self.credentials)
+                    pickle.dump(credentials, token)
+        return credentials
 
     def _imap_connection(self):
         auth_string = 'user=%s\1auth=Bearer %s\1\1' % (self.user, self.credentials.token)
-        self.mail = imap.IMAP4_SSL('imap.gmail.com')
-        self.mail.authenticate('XOAUTH2', lambda x: auth_string)
+        mail = imap.IMAP4_SSL('imap.gmail.com')
+        mail.authenticate('XOAUTH2', lambda x: auth_string)
+        mail.select('INBOX')
+        return mail
+
+    def readMail(self):
+        print(self.mail.list())
+
+    def close(self):
+        self.mail.close()
 
     #===========================================================================
     # get
@@ -115,4 +122,5 @@ class GmailReader():
 
 if __name__ == "__main__":
     er = GmailReader()
-    #er.readMail()
+    er.readMail()
+    er.close()
