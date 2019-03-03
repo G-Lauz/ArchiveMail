@@ -56,17 +56,30 @@ class GmailReader():
         auth_string = 'user=%s\1auth=Bearer %s\1\1' % (self.user, self.credentials.token)
         mail = imap.IMAP4_SSL('imap.gmail.com')
         mail.authenticate('XOAUTH2', lambda x: auth_string)
-        mail.select('INBOX')
         return mail
 
-    def readMail(self, critere="NEW"):
-        print("Lecture...")
-        typ, data = self.mail.search(None, critere)
-        print(data)
-        for i in data[0].split():
-            typ, data = self.mail.fetch(i, '(UID BODY[TEXT])')
-            print("Message {}\n{}\n".format(i, data[0][1]))
+    def readMail(self, select="INBOX", critere="ALL"):
+        rv, data = self.mail.select(select)
+        if rv == 'OK':
+            rv, data = self.mail.search(None, critere)
+            if rv != 'OK':
+                print("Auncun message trouvé!")
 
+            for i in data[0].split():
+                rv, data = self.mail.fetch(i, "(RFC822)")
+                if rv != 'OK':
+                    print("Erreur en lisant le message ", i)
+                    return
+
+                msg = email.message_from_bytes(data[0][1])
+                print("Message {}: {}".format(i,msg['Subject']))
+                print("From {}".format(msg["From"]))
+                print("Raw Date: {}".format(msg["Date"]))
+
+                if msg.is_multipart():
+                    print("Message Multipart\n")
+                else:
+                    print(msg.get_payload()+'\n')
 
 
     def close(self):
@@ -130,5 +143,5 @@ class GmailReader():
 
 if __name__ == "__main__":
     er = GmailReader()
-    er.readMail(critere="ALL")
+    er.readMail()
     er.close()
