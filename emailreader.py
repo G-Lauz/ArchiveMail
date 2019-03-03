@@ -8,7 +8,7 @@ from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
-import base64
+import email
 
 #9h à 10h30
 class GmailReader():
@@ -59,11 +59,19 @@ class GmailReader():
         mail.select('INBOX')
         return mail
 
-    def readMail(self):
-        print(self.mail.list())
+    def readMail(self, critere="NEW"):
+        print("Lecture...")
+        typ, data = self.mail.search(None, critere)
+        print(data)
+        for i in data[0].split():
+            typ, data = self.mail.fetch(i, '(UID BODY[TEXT])')
+            print("Message {}\n{}\n".format(i, data[0][1]))
+
+
 
     def close(self):
         self.mail.close()
+        self.mail.logout()
 
     #===========================================================================
     # get
@@ -122,5 +130,5 @@ class GmailReader():
 
 if __name__ == "__main__":
     er = GmailReader()
-    er.readMail()
+    er.readMail(critere="ALL")
     er.close()
