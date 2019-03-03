@@ -9,6 +9,9 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
 import email
+from bs4 import BeautifulSoup as bs
+
+import os
 
 #9h à 10h30
 class GmailReader():
@@ -86,16 +89,29 @@ class GmailReader():
                             print(body.decode())
                         elif part.get_content_type() == 'text/html':
                             print("HTML 2")
+                            body = part.get_payload(decode=True)
+                            soup = bs(body.decode())
+                            print(self._html2string(part.get_payload(decode=True).decode()))
                 else:
                     if msg.get_content_type() == 'text/plain':
                         body = msg.get_payload(decode=True)
                         #print(body)
                         print(body.decode())
                     elif msg.get_content_type() == 'text/html':
-                        print("HTML 1")
+                        print("HTML 1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                        try:
+                            print(self._html2string(msg.get_payload(decode=True).decode('utf-8')))
+                        except Exception:
+                            print(self._html2string(msg.get_payload(decode=True).decode('latin-1')))
 
                 print("=====================================================\n")
 
+    def _html2string(self, payload):
+        soup = bs(payload, "html.parser")
+        [s.decompose() for s in soup(['script','style'])]
+        #text = soup.get_text()
+        text = " ".join(s for s in soup.stripped_strings)
+        return text
 
     def close(self):
         self.mail.close()
@@ -160,3 +176,4 @@ if __name__ == "__main__":
     er = GmailReader()
     er.readMail()
     er.close()
+    #os.system("pause")
