@@ -81,24 +81,19 @@ class GmailReader():
                 print("=====================================================\n")
 
                 if msg.is_multipart():
-                    print("Message Multipart")
                     for part in msg.walk():
                         if part.get_content_type() == 'text/plain':
                             body = part.get_payload(decode=True)
-                            #print(body)
                             print(body.decode())
                         elif part.get_content_type() == 'text/html':
-                            print("HTML 2")
                             body = part.get_payload(decode=True)
                             soup = bs(body.decode())
                             print(self._html2string(part.get_payload(decode=True).decode()))
                 else:
                     if msg.get_content_type() == 'text/plain':
                         body = msg.get_payload(decode=True)
-                        #print(body)
                         print(body.decode())
                     elif msg.get_content_type() == 'text/html':
-                        print("HTML 1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                         try:
                             print(self._html2string(msg.get_payload(decode=True).decode('utf-8')))
                         except Exception:
@@ -109,8 +104,7 @@ class GmailReader():
     def _html2string(self, payload):
         soup = bs(payload, "html.parser")
         [s.decompose() for s in soup(['script','style'])]
-        #text = soup.get_text()
-        text = " ".join(s for s in soup.stripped_strings)
+        text = "\n".join(s for s in soup.stripped_strings)
         return text
 
     def close(self):
