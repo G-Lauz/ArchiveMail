@@ -74,12 +74,27 @@ class GmailReader():
                 msg = email.message_from_bytes(data[0][1])
                 print("Message {}: {}".format(i,msg['Subject']))
                 print("From {}".format(msg["From"]))
-                print("Raw Date: {}".format(msg["Date"]))
+
+                print("=====================================================\n")
 
                 if msg.is_multipart():
-                    print("Message Multipart\n")
+                    print("Message Multipart")
+                    for part in msg.walk():
+                        if part.get_content_type() == 'text/plain':
+                            body = part.get_payload(decode=True)
+                            #print(body)
+                            print(body.decode())
+                        elif part.get_content_type() == 'text/html':
+                            print("HTML 2")
                 else:
-                    print(msg.get_payload()+'\n')
+                    if msg.get_content_type() == 'text/plain':
+                        body = msg.get_payload(decode=True)
+                        #print(body)
+                        print(body.decode())
+                    elif msg.get_content_type() == 'text/html':
+                        print("HTML 1")
+
+                print("=====================================================\n")
 
 
     def close(self):
