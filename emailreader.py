@@ -1,22 +1,19 @@
 # -*-coding:Latin-1 -*
-from getpass import getpass
 import imaplib as imap
 
 import pickle
 import os.path
+import email
 from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
-
-import email
 from bs4 import BeautifulSoup as bs
 
-import os
 
 #9h à 10h30
 class GmailReader():
 
-    def __init__(self):
+    def __init__(self, username="None"):
         #Supprimer le fichier token.pickle si on change le scopes
         self._SCOPES = ["https://mail.google.com/"]
         self._CLIENT_SECRET = "../client_secret.json"
@@ -28,7 +25,7 @@ class GmailReader():
         self._mail = None
         self._user = None
 
-        self.user = input("Username: ")
+        self.user = username
         self.credentials = self._get_authenticated()
         self.mail = self._imap_connection()
 
@@ -167,7 +164,7 @@ class GmailReader():
     user = property(fget=_get_user, fset=_set_user)
 
 if __name__ == "__main__":
-    er = GmailReader()
+    er = GmailReader(input("Username: "))
     er.readMail()
     er.close()
     #os.system("pause")
