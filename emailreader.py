@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup as bs
 
 class GmailReader():
 
-    def __init__(self, username="None"):
+    def __init__(self, username=None):
         #Supprimer le fichier token.pickle si on change le scopes
         self._SCOPES = ["https://mail.google.com/"]
         self._CLIENT_SECRET = "../client_secret.json"
@@ -26,6 +26,7 @@ class GmailReader():
         self.user = username
         self.credentials = self._get_authenticated()
         self.mail = self._imap_connection()
+        print(self, "Connected")
 
 
     def _get_authenticated(self):

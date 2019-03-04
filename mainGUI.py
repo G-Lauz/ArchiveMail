@@ -5,14 +5,17 @@ from PySide2.QtWidgets import (QApplication, QMainWindow, QWidget, QMenuBar,
     QAction)
 
 import homeGUI
+import readGUI
 
 class mainGUI(QMainWindow):
 
     def __init__(self):
         super(mainGUI, self).__init__()
 
+        self.setWindowTitle("ArchiveMail")
+
         self.home = homeGUI.homeGUI()
-        self.home.userEdited.connect(self.openCommand)
+        self.home.userEdited.connect(self.openRead)
         self.setCentralWidget(self.home)
 
         self.createActions()
@@ -29,8 +32,10 @@ class mainGUI(QMainWindow):
         print("Test")
 
     @Slot(str)
-    def openCommand(self, s):
-        print(s)
+    def openRead(self, username):
+        self.read = readGUI.readGUI(username=username)
+        self.setCentralWidget(self.read)
+        del self.home
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
