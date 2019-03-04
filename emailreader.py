@@ -9,8 +9,6 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from bs4 import BeautifulSoup as bs
 
-
-#9h à 10h30
 class GmailReader():
 
     def __init__(self, username="None"):
@@ -167,4 +165,3 @@ if __name__ == "__main__":
     er = GmailReader(input("Username: "))
     er.readMail()
     er.close()
-    #os.system("pause")

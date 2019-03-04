@@ -1,5 +1,6 @@
 import sys
-from PySide2 import QtWidgets
+from PySide2 import QtWidgets, QtCore
+from PySide2.QtCore import QObject, Signal, Slot
 from PySide2.QtWidgets import (QApplication, QMainWindow, QWidget, QMenuBar,
     QAction)
 
@@ -10,10 +11,9 @@ class mainGUI(QMainWindow):
     def __init__(self):
         super(mainGUI, self).__init__()
 
-        self.setFixedSize(400,240)
-
-        #self.home = homeGUI.homeGUI()
-        #self.setCentralWidget(self.home)
+        self.home = homeGUI.homeGUI()
+        self.home.userEdited.connect(self.openCommand)
+        self.setCentralWidget(self.home)
 
         self.createActions()
         self.createMenus()
@@ -27,6 +27,10 @@ class mainGUI(QMainWindow):
 
     def test(self):
         print("Test")
+
+    @Slot(str)
+    def openCommand(self, s):
+        print(s)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
