@@ -9,6 +9,11 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from bs4 import BeautifulSoup as bs
 
+from threadpool import threaded
+from PySide2.QtCore import QObject, Signal, Slot
+
+import time
+
 class GmailReader():
 
     def __init__(self, username=None):
@@ -26,7 +31,8 @@ class GmailReader():
         self.user = username
         self.credentials = self._get_authenticated()
         self.mail = self._imap_connection()
-        print(self, "Connected")
+
+        self._updateProgress = Signal(float)
 
 
     def _get_authenticated(self):
@@ -57,6 +63,7 @@ class GmailReader():
         mail.authenticate('XOAUTH2', lambda x: auth_string)
         return mail
 
+    @threaded
     def readMail(self, select="INBOX", critere="ALL"):
         rv, data = self.mail.select(select)
         if rv == 'OK':
@@ -64,14 +71,18 @@ class GmailReader():
             if rv != 'OK':
                 print("Auncun message trouvé!")
 
-            for i in data[0].split():
-                rv, data = self.mail.fetch(i, "(RFC822)")
+            dataLen = len(data[0].split())
+
+            for i,index in enumerate(data[0].split()):
+                self.updateProgress.emit(((i+1)/dataLen)*100)
+
+                rv, data = self.mail.fetch(index, "(RFC822)")
                 if rv != 'OK':
-                    print("Erreur en lisant le message ", i)
+                    print("Erreur en lisant le message ", index)
                     return
 
                 msg = email.message_from_bytes(data[0][1])
-                print("Message {}: {}".format(i,msg['Subject']))
+                print("Message {}: {}".format(index,msg['Subject']))
                 print("From {}".format(msg["From"]))
 
                 print("=====================================================\n")
@@ -134,6 +145,9 @@ class GmailReader():
     def _get_user(self):
         return self._user
 
+    def _get_updateProgress(self):
+        return self._updateProgress
+
     #===========================================================================
     # set
     #===========================================================================
@@ -149,6 +163,9 @@ class GmailReader():
     def _set_user(self, user):
         self._user = user
 
+    def _set_updateProgress(self, signal):
+        self._updateProgress = signal
+
     #===========================================================================
     # Propriété
     #===========================================================================
@@ -161,6 +178,7 @@ class GmailReader():
     credentials = property(fget=_get_credentials, fset=_set_credentials)
     mail = property(fget=_get_mail, fset=_set_mail)
     user = property(fget=_get_user, fset=_set_user)
+    updateProgress = property(fget=_get_updateProgress,fset=_set_updateProgress)
 
 if __name__ == "__main__":
     er = GmailReader(input("Username: "))
