@@ -22,7 +22,7 @@ class mainGUI(QMainWindow):
         self.createMenus()
 
     def createActions(self):
-        self.newAct = QAction("&New",statusTip="un test", triggered=self.test)
+        self.newAct = QAction("&Export",statusTip="un test", triggered=self.test)
 
     def createMenus(self):
         self.fileMenu = self.menuBar().addMenu("&File")

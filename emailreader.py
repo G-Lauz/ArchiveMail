@@ -58,10 +58,17 @@ class GmailReader():
         return credentials
 
     def _imap_connection(self):
-        auth_string = 'user=%s\1auth=Bearer %s\1\1' % (self.user, self.credentials.token)
-        mail = imap.IMAP4_SSL('imap.gmail.com')
-        mail.authenticate('XOAUTH2', lambda x: auth_string)
-        return mail
+        try:
+            auth_string = 'user=%s\1auth=Bearer %s\1\1' % (self.user, self.credentials.token)
+            mail = imap.IMAP4_SSL('imap.gmail.com')
+            mail.authenticate('XOAUTH2', lambda x: auth_string)
+            return mail
+        except Exception:
+            print("Exception...")
+            os.remove('../token.pickle')
+            self.credentials = self._get_authenticated()
+            self.mail = self._imap_connection()
+
 
     @threaded
     def readMail(self, select="INBOX", critere="ALL"):
@@ -90,20 +97,25 @@ class GmailReader():
                 if msg.is_multipart():
                     for part in msg.walk():
                         if part.get_content_type() == 'text/plain':
-                            body = part.get_payload(decode=True)
-                            print(body.decode())
+                            try:
+                                print(part.get_payload(decode=True).decode('utf-8'))
+                            except UnicodeDecodeError:
+                                print(part.get_payload(decode=True).decode('latin-1'))
                         elif part.get_content_type() == 'text/html':
-                            body = part.get_payload(decode=True)
-                            soup = bs(body.decode())
-                            print(self._html2string(part.get_payload(decode=True).decode()))
+                            try:
+                                print(self._html2string(part.get_payload(decode=True).decode('utf-8')))
+                            except UnicodeDecodeError:
+                                print(self._html2string(part.get_payload(decode=True).decode('latin-1')))
                 else:
                     if msg.get_content_type() == 'text/plain':
-                        body = msg.get_payload(decode=True)
-                        print(body.decode())
+                        try:
+                            print(msg.get_payload(decode=True).decode('utf-8'))
+                        except UnicodeDecodeError:
+                            print(msg.get_payload(decode=True).decode('latin-1'))
                     elif msg.get_content_type() == 'text/html':
                         try:
                             print(self._html2string(msg.get_payload(decode=True).decode('utf-8')))
-                        except Exception:
+                        except UnicodeDecodeError:
                             print(self._html2string(msg.get_payload(decode=True).decode('latin-1')))
 
                 print("=====================================================\n")

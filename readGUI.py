@@ -5,7 +5,6 @@ from PySide2.QtWidgets import (QWidget, QVBoxLayout, QPushButton, QProgressBar,
     QLabel)
 
 from emailreader import GmailReader
-from threadpool import threaded
 
 class readGUI(QWidget, GmailReader):
 
