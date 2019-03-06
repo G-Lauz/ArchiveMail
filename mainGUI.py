@@ -6,6 +6,7 @@ from PySide2.QtWidgets import (QApplication, QMainWindow, QWidget, QMenuBar,
 
 import homeGUI
 import readGUI
+import commandGUI
 
 class mainGUI(QMainWindow):
 
@@ -22,20 +23,20 @@ class mainGUI(QMainWindow):
         self.createMenus()
 
     def createActions(self):
-        self.newAct = QAction("&Export",statusTip="un test", triggered=self.test)
+        self.newAct = QAction("&Export",statusTip="un test", triggered=self.openCommand)
 
     def createMenus(self):
         self.fileMenu = self.menuBar().addMenu("&File")
         self.fileMenu.addAction(self.newAct)
 
-    def test(self):
-        print("Test")
+    def openCommand(self):
+        self.command = commandGUI.commandGUI()
+        self.setCentralWidget(self.command)
 
     @Slot(str)
     def openRead(self, username):
         self.read = readGUI.readGUI(username=username)
         self.setCentralWidget(self.read)
-        del self.home
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

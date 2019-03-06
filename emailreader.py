@@ -12,12 +12,9 @@ from bs4 import BeautifulSoup as bs
 from threadpool import threaded
 from PySide2.QtCore import QObject, Signal, Slot
 
-import time
-
 class GmailReader():
 
     def __init__(self, username=None):
-        #Supprimer le fichier token.pickle si on change le scopes
         self._SCOPES = ["https://mail.google.com/"]
         self._CLIENT_SECRET = "../client_secret.json"
         self._API_SERVICE_NAME = "gmail"
@@ -27,8 +24,8 @@ class GmailReader():
         self._service = None
         self._mail = None
         self._user = None
-
         self.user = username
+
         self.credentials = self._get_authenticated()
         self.mail = self._imap_connection()
 
@@ -64,10 +61,9 @@ class GmailReader():
             mail.authenticate('XOAUTH2', lambda x: auth_string)
             return mail
         except Exception:
-            print("Exception...")
             os.remove('../token.pickle')
             self.credentials = self._get_authenticated()
-            self.mail = self._imap_connection()
+            return self._imap_connection()
 
 
     @threaded
@@ -119,6 +115,8 @@ class GmailReader():
                             print(self._html2string(msg.get_payload(decode=True).decode('latin-1')))
 
                 print("=====================================================\n")
+
+        print("END")
 
     def _html2string(self, payload):
         soup = bs(payload, "html.parser")
