@@ -13,7 +13,7 @@ class homeGUI(QWidget):
         self.userText = QLabel("Adresse courriel :")
 
         self.userEdit = QLineEdit()
-        self.userEdit.editingFinished.connect(self.openRead)
+        self.userEdit.returnPressed.connect(self.openRead)
 
         layout = QtWidgets.QHBoxLayout()
         layout.addWidget(self.userText)
