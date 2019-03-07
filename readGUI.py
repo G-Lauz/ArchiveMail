@@ -35,6 +35,9 @@ class readGUI(QWidget, GmailReader):
         layout.addWidget(self.detailText)
         self.setLayout(layout)
 
+    def __del__(self):
+        print("Destruction : ", self)
+
     @Slot(float)
     def setProgress(self, progress):
         self.detailText.setText(str(progress))

@@ -4,9 +4,7 @@ from PySide2.QtCore import QObject, Signal, Slot
 from PySide2.QtWidgets import (QApplication, QMainWindow, QWidget, QMenuBar,
     QAction)
 
-import homeGUI
-import readGUI
-import commandGUI
+import stackedGUI
 
 class mainGUI(QMainWindow):
 
@@ -14,29 +12,24 @@ class mainGUI(QMainWindow):
         super(mainGUI, self).__init__()
 
         self.setWindowTitle("ArchiveMail")
+        self.setFixedSize(400,240)
 
-        self.home = homeGUI.homeGUI()
-        self.home.userEdited.connect(self.openRead)
-        self.setCentralWidget(self.home)
+        self.stacked = stackedGUI.stackedGUI()
+        self.setCentralWidget(self.stacked)
 
         self.createActions()
         self.createMenus()
 
     def createActions(self):
-        self.newAct = QAction("&Export",statusTip="un test", triggered=self.openCommand)
+        self.readAct = QAction("&Lire",statusTip="un test",
+            triggered=self.stacked.openLire)
+        self.exportAct = QAction("&Exporter",statusTip="un test",
+            triggered=self.stacked.openCommand)
 
     def createMenus(self):
         self.fileMenu = self.menuBar().addMenu("&File")
-        self.fileMenu.addAction(self.newAct)
-
-    def openCommand(self):
-        self.command = commandGUI.commandGUI()
-        self.setCentralWidget(self.command)
-
-    @Slot(str)
-    def openRead(self, username):
-        self.read = readGUI.readGUI(username=username)
-        self.setCentralWidget(self.read)
+        self.fileMenu.addAction(self.readAct)
+        self.fileMenu.addAction(self.exportAct)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
