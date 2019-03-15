@@ -75,6 +75,8 @@ class GmailReader():
                 print("Auncun message trouvé!")
 
             dataLen = len(data[0].split())
+            if dataLen == 0:
+                print("Auncun message trouvé!")
 
             for i,index in enumerate(data[0].split()):
                 self.updateProgress.emit(((i+1)/dataLen)*100)
@@ -89,34 +91,17 @@ class GmailReader():
                 print("From {}".format(msg["From"]))
 
                 print("=====================================================\n")
-
+                test = 0
                 if msg.is_multipart():
                     for part in msg.walk():
-                        if part.get_content_type() == 'text/plain':
-                            try:
-                                print(part.get_payload(decode=True).decode('utf-8'))
-                            except UnicodeDecodeError:
-                                print(part.get_payload(decode=True).decode('latin-1'))
-                        elif part.get_content_type() == 'text/html':
-                            try:
-                                print(self._html2string(part.get_payload(decode=True).decode('utf-8')))
-                            except UnicodeDecodeError:
-                                print(self._html2string(part.get_payload(decode=True).decode('latin-1')))
+                        test+=1
+                        self.readType(part)
+
+                        print("///////////\n     {}     \n///////////".format(test))
                 else:
-                    if msg.get_content_type() == 'text/plain':
-                        try:
-                            print(msg.get_payload(decode=True).decode('utf-8'))
-                        except UnicodeDecodeError:
-                            print(msg.get_payload(decode=True).decode('latin-1'))
-                    elif msg.get_content_type() == 'text/html':
-                        try:
-                            print(self._html2string(msg.get_payload(decode=True).decode('utf-8')))
-                        except UnicodeDecodeError:
-                            print(self._html2string(msg.get_payload(decode=True).decode('latin-1')))
+                    self.readType(msg)
 
                 print("=====================================================\n")
-
-        print("END")
 
     def _html2string(self, payload):
         soup = bs(payload, "html.parser")
@@ -127,6 +112,21 @@ class GmailReader():
     def close(self):
         self.mail.close()
         self.mail.logout()
+
+    def readType(self, msg, fipart=3, fpart=False):
+        if fpart:
+            msg = msg[fipart]
+
+        if msg.get_content_type() == 'text/plain':
+            try:
+                print(msg.get_payload(decode=True).decode('utf-8'))
+            except UnicodeDecodeError:
+                print(msg.get_payload(decode=True).decode('latin-1'))
+        elif msg.get_content_type() == 'text/html':
+            try:
+                print(self._html2string(msg.get_payload(decode=True).decode('utf-8')))
+            except UnicodeDecodeError:
+                print(self._html2string(msg.get_payload(decode=True).decode('latin-1')))
 
     #===========================================================================
     # get

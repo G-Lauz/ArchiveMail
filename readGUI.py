@@ -44,4 +44,4 @@ class readGUI(QWidget, GmailReader):
         self.progressBar.setValue(progress)
 
     def read(self):
-        self.readMail()
+        self.readMail(critere="UNSEEN")
