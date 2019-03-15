@@ -93,13 +93,14 @@ class GmailReader():
                 print("=====================================================\n")
                 test = 0
                 if msg.is_multipart():
+                    #self.readType(list(msg.walk()), fipart=3, fpart=True)
                     for part in msg.walk():
                         test+=1
-                        self.readType(part)
+                        print(self.readType(part))
 
                         print("///////////\n     {}     \n///////////".format(test))
                 else:
-                    self.readType(msg)
+                    print(self.readType(msg))
 
                 print("=====================================================\n")
 
@@ -119,14 +120,14 @@ class GmailReader():
 
         if msg.get_content_type() == 'text/plain':
             try:
-                print(msg.get_payload(decode=True).decode('utf-8'))
+                return msg.get_payload(decode=True).decode('utf-8')
             except UnicodeDecodeError:
-                print(msg.get_payload(decode=True).decode('latin-1'))
+                return msg.get_payload(decode=True).decode('latin-1')
         elif msg.get_content_type() == 'text/html':
             try:
-                print(self._html2string(msg.get_payload(decode=True).decode('utf-8')))
+                return self._html2string(msg.get_payload(decode=True).decode('utf-8'))
             except UnicodeDecodeError:
-                print(self._html2string(msg.get_payload(decode=True).decode('latin-1')))
+                return self._html2string(msg.get_payload(decode=True).decode('latin-1'))
 
     #===========================================================================
     # get
