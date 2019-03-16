@@ -9,8 +9,11 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from bs4 import BeautifulSoup as bs
 
-from threadpool import threaded
 from PySide2.QtCore import QObject, Signal, Slot
+from email.header import decode_header
+
+from threadpool import threaded
+import dict
 
 class GmailReader():
 
@@ -91,16 +94,17 @@ class GmailReader():
                 print("From {}".format(msg["From"]))
 
                 print("=====================================================\n")
-                test = 0
-                if msg.is_multipart():
+                print(self.getdata(msg))
+                #test = 0
+                #if msg.is_multipart():
                     #self.readType(list(msg.walk()), fipart=3, fpart=True)
-                    for part in msg.walk():
-                        test+=1
-                        print(self.readType(part))
+                #    for part in msg.walk():
+                #        test+=1
+                #        print(self.readType(part))
 
-                        print("///////////\n     {}     \n///////////".format(test))
-                else:
-                    print(self.readType(msg))
+                #        print("///////////\n     {}     \n///////////".format(test))
+                #else:
+                #    print(self.readType(msg))
 
                 print("=====================================================\n")
 
@@ -114,7 +118,7 @@ class GmailReader():
         self.mail.close()
         self.mail.logout()
 
-    def readType(self, msg, fipart=3, fpart=False):
+    def readType(self, msg: list, fipart=3, fpart=False):
         if fpart:
             msg = msg[fipart]
 
@@ -128,6 +132,35 @@ class GmailReader():
                 return self._html2string(msg.get_payload(decode=True).decode('utf-8'))
             except UnicodeDecodeError:
                 return self._html2string(msg.get_payload(decode=True).decode('latin-1'))
+
+    def getdata(self, msg):
+        if msg.is_multipart():
+            message = self.readType(list(msg.walk()), fipart=3, fpart=True)
+            listLine = message.splitlines()
+
+            def site(m):
+                for i in dict.SITE:
+                    if i in m:
+                        return i
+
+            if site(message) == "Jobboom":
+                return dict.Bunch(
+                    email= listLine[24],
+                    sexe= None, #à faire
+                    prenom= listLine[19].split()[0],
+                    nom= "".join(i for i in listLine[19].split()[1:]),
+                    interet= listLine[15], #à faire
+                    site="Jobboom"
+                    )
+            elif site(message) == ".ca":
+                return dict.Bunch(
+                    email= listLine[20],
+                    sexe= None, #à faire
+                    prenom= listLine[13],
+                    nom= listLine[15],
+                    interet= listLine[25], #à faire
+                    site=".ca"
+                    )
 
     #===========================================================================
     # get
