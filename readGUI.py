@@ -1,10 +1,12 @@
-import sys
+# -*-coding:utf-8 -*
+import sys, traceback
 from PySide2 import QtWidgets, QtGui, QtCore
 from PySide2.QtCore import QObject, Signal, Slot
 from PySide2.QtWidgets import (QWidget, QVBoxLayout, QPushButton, QProgressBar,
     QLabel)
 
 from emailreader import GmailReader
+import threadpool
 
 class readGUI(QWidget, GmailReader):
 
@@ -40,8 +42,16 @@ class readGUI(QWidget, GmailReader):
 
     @Slot(float)
     def setProgress(self, progress):
-        self.detailText.setText(str(progress))
         self.progressBar.setValue(progress)
+
+    @Slot(Exception)
+    def setDetails(self, e):
+        self.detailText.setText(e)
 
     def read(self):
         self.readMail(critere="UNSEEN")
+        self.detailText.setText("Lecture...")
+
+        def exception_hook(type, value, tb):
+            self.detailText.setText(str(value))
+        sys.excepthook = exception_hook

@@ -1,11 +1,9 @@
 from functools import wraps
-from PySide2.QtCore import QThread, Signal
-
-from time import sleep
+from PySide2.QtCore import QThread, Signal, Slot
 
 class progressThread(QThread):
 
-    progress_update = Signal(float)
+    exception = Signal(Exception)
 
     def __init__(self, fct, *args, **kwargs):
         QThread.__init__(self)
@@ -14,12 +12,21 @@ class progressThread(QThread):
         self._kwargs = kwargs
 
     def run(self):
-        self._fct(*self._args, **self._kwargs)
+        try:
+            self._fct(*self._args, **self._kwargs)
+        except Exception as e:
+            self.exception.emit(e)
 
 def threaded(fct):
     @wraps(fct)
     def wrapper(*args, **kwargs):
         progress = progressThread(fct, *args, **kwargs)
         fct.__runner = progress
+
+        @Slot(Exception)
+        def error(exc):
+            raise exc
+
+        progress.exception.connect(error)
         progress.start()
     return wrapper

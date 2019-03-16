@@ -78,11 +78,11 @@ class GmailReader():
         if rv == 'OK':
             rv, data = self.mail.search(None, critere)
             if rv != 'OK':
-                raise Exception("Auncun message trouvé!")
+                raise Exception("Auncun message")
 
             dataLen = len(data[0].split())
             if dataLen == 0:
-                raise Exception("Auncun message trouvé!")
+                raise Exception("Auncun message")
 
             for i,index in enumerate(data[0].split()):
                 self.updateProgress.emit(((i+1)/dataLen)*100)
@@ -91,11 +91,11 @@ class GmailReader():
                 if rv != 'OK':
                     raise Exception("Erreur en lisant le message {}".format(index))
 
-                #msg = email.message_from_bytes(data[0][1])
+                msg = email.message_from_bytes(data[0][1])
                 #print("Message {}: {}".format(index,msg['Subject']))
                 #print("From {}".format(msg["From"]))
 
-                print("=====================================================\n")
+                print("=====================================================")
                 self._storedata(self._getdata(msg))
 
                 alist = [self._db.EMAIL,self._db.PRENOM]
