@@ -14,6 +14,7 @@ from email.header import decode_header
 
 from threadpool import threaded
 import dict
+from dbsqlite import PostulantDB
 
 class GmailReader():
 
@@ -28,6 +29,8 @@ class GmailReader():
         self._mail = None
         self._user = None
         self.user = username
+
+        self._db = None
 
         self.credentials = self._get_authenticated()
         self.mail = self._imap_connection()
@@ -75,26 +78,32 @@ class GmailReader():
         if rv == 'OK':
             rv, data = self.mail.search(None, critere)
             if rv != 'OK':
-                print("Auncun message trouvé!")
+                raise Exception("Auncun message trouvé!")
 
             dataLen = len(data[0].split())
             if dataLen == 0:
-                print("Auncun message trouvé!")
+                raise Exception("Auncun message trouvé!")
 
             for i,index in enumerate(data[0].split()):
                 self.updateProgress.emit(((i+1)/dataLen)*100)
 
                 rv, data = self.mail.fetch(index, "(RFC822)")
                 if rv != 'OK':
-                    print("Erreur en lisant le message ", index)
-                    return
+                    raise Exception("Erreur en lisant le message {}".format(index))
 
-                msg = email.message_from_bytes(data[0][1])
-                print("Message {}: {}".format(index,msg['Subject']))
-                print("From {}".format(msg["From"]))
+                #msg = email.message_from_bytes(data[0][1])
+                #print("Message {}: {}".format(index,msg['Subject']))
+                #print("From {}".format(msg["From"]))
 
                 print("=====================================================\n")
-                print(self.getdata(msg))
+                self._storedata(self._getdata(msg))
+
+                alist = [self._db.EMAIL,self._db.PRENOM]
+                #print(self._db.select(self._db.TABLETODAY, self._db.EMAIL))
+                #print("\n")
+                #print(self._db.selectThese(self._db.TABLETODAY, alist))
+                #print(self._db.tableList())
+
                 #test = 0
                 #if msg.is_multipart():
                     #self.readType(list(msg.walk()), fipart=3, fpart=True)
@@ -118,7 +127,7 @@ class GmailReader():
         self.mail.close()
         self.mail.logout()
 
-    def readType(self, msg: list, fipart=3, fpart=False):
+    def _readType(self, msg: list, fipart=3, fpart=False):
         if fpart:
             msg = msg[fipart]
 
@@ -133,9 +142,9 @@ class GmailReader():
             except UnicodeDecodeError:
                 return self._html2string(msg.get_payload(decode=True).decode('latin-1'))
 
-    def getdata(self, msg):
+    def _getdata(self, msg):
         if msg.is_multipart():
-            message = self.readType(list(msg.walk()), fipart=3, fpart=True)
+            message = self._readType(list(msg.walk()), fipart=3, fpart=True)
             listLine = message.splitlines()
 
             def site(m):
@@ -161,6 +170,10 @@ class GmailReader():
                     interet= listLine[25], #à faire
                     site=".ca"
                     )
+
+    def _storedata(self, adict : dict):
+        self._db = PostulantDB()
+        self._db.insert(**adict)
 
     #===========================================================================
     # get
