@@ -4,10 +4,16 @@ from PySide2.QtCore import QObject, Signal, Slot
 from PySide2.QtWidgets import (QWidget, QGridLayout, QComboBox, QPushButton,
     QLabel)
 
+from mycsv import csvManipulator
+from dbsqlite import PostulantDB
+
 class commandGUI(QWidget):
 
     def __init__(self, parent=None):
         QWidget.__init__(self,parent)
+
+        self._db = None
+        self._csv = None
 
         self.interetText = QLabel("Interêt :")
 
@@ -31,7 +37,7 @@ class commandGUI(QWidget):
         self.typeComboBox.addItem("Test 3")
 
         self.exportButton = QPushButton("Exporter")
-        self.exportButton.clicked.connect(lambda x : print("Bouton exporter"))
+        self.exportButton.clicked.connect(self.exportcsv("test"))
 
         layout = QGridLayout()
         layout.addWidget(self.interetText, 0, 0)
@@ -42,3 +48,10 @@ class commandGUI(QWidget):
         layout.addWidget(self.typeComboBox, 3, 0)
         layout.addWidget(self.exportButton, 3, 1)
         self.setLayout(layout)
+
+    def exportcsv(self, filname : str):
+        self._db = PostulantDB()
+        self._csv = csvManipulator(filname)
+        data = self._db.selectThese(self._db.TABLETODAY, [self._db.EMAIL,
+            self._db.PRENOM, self._db.INTERET])
+        self._csv.write(data)

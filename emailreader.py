@@ -92,8 +92,8 @@ class GmailReader():
                     raise Exception("Erreur en lisant le message {}".format(index))
 
                 msg = email.message_from_bytes(data[0][1])
-                #print("Message {}: {}".format(index,msg['Subject']))
-                #print("From {}".format(msg["From"]))
+                print("Message {}: {}".format(index,msg['Subject']))
+                print("From {}".format(msg["From"]))
 
                 print("=====================================================")
                 self._storedata(self._getdata(msg))
@@ -129,9 +129,7 @@ class GmailReader():
 
     def _readType(self, msg: list, fipart=3, fpart=False):
         if fpart:
-            print("test")
             msg = msg[fipart]
-            print("test")
 
         if msg.get_content_type() == 'text/plain':
             try:

@@ -275,6 +275,6 @@ if __name__ == "__main__":
     print("\n")
     print(db.countAValue(db.TABLETODAY, db.PRENOM, "etienne"))
 
-    db.deleteTable(db.TABLENAME, 2019, 2)
+    #db.deleteTable(db.TABLENAME, 2019, 2)
     print(db.tableList())
     #db.close()
