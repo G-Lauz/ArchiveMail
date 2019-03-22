@@ -129,7 +129,9 @@ class GmailReader():
 
     def _readType(self, msg: list, fipart=3, fpart=False):
         if fpart:
+            print("test")
             msg = msg[fipart]
+            print("test")
 
         if msg.get_content_type() == 'text/plain':
             try:
