@@ -2,10 +2,11 @@ import sys
 from PySide2 import QtWidgets, QtGui, QtCore
 from PySide2.QtCore import QObject, Signal, Slot
 from PySide2.QtWidgets import (QWidget, QGridLayout, QComboBox, QPushButton,
-    QLabel)
+    QLabel, QVBoxLayout, QButtonGroup, QCheckBox)
 
 from mycsv import csvManipulator
 from dbsqlite import PostulantDB
+import appdata
 
 class commandGUI(QWidget):
 
@@ -15,43 +16,55 @@ class commandGUI(QWidget):
         self._db = None
         self._csv = None
 
-        self.interetText = QLabel("Interêt :")
+        self.initUI()
 
-        self.interetComboBox = QComboBox()
-        self.interetComboBox.addItem("Test 1")
-        self.interetComboBox.addItem("Test 2")
-        self.interetComboBox.addItem("Test 3")
+    def initUI(self):
+        self.checkboxLayout = QVBoxLayout()
+        self.choiceText = QLabel("Options :")
+        self.checkboxLayout.addWidget(self.choiceText)
 
-        self.dateText = QLabel("Mois :")
+        self.buttonGroup = QButtonGroup()
+        for i, info in enumerate(appdata.INFO):
+            checkbox = QCheckBox(info, self)
+            self.buttonGroup.addButton(checkbox, i)
+            self.checkboxLayout.addWidget(checkbox)
+        self.buttonGroup.setExclusive(False)
 
-        self.dateComboBox = QComboBox()
-        self.dateComboBox.addItem("Test 1")
-        self.dateComboBox.addItem("Test 2")
-        self.dateComboBox.addItem("Test 3")
+        self.detailLayout = QVBoxLayout()
+        self.detailText = QLabel("Détails :")
+        self.detailLayout.addWidget(self.detailText)
+        self.infoText = QLabel()
+        self.detailLayout.addWidget(self.infoText)
 
-        self.typeText = QLabel("Type :")
+        self.dateLayout = QVBoxLayout()
+        self.dateText = QLabel("Période :")
+        self.dateLayout.addWidget(self.dateText)
 
-        self.typeComboBox = QComboBox()
-        self.typeComboBox.addItem("Test 1")
-        self.typeComboBox.addItem("Test 2")
-        self.typeComboBox.addItem("Test 3")
+        self.yearComboBox = QComboBox()
+        self.yearComboBox.addItem("Tout les années")
+        for i in range(10):     #REVOIR POUR UNE MEILLEUR MODULARITÉ
+            self.yearComboBox.addItem(str(2019+i))
+        self.dateLayout.addWidget(self.yearComboBox)
+
+        self.monthComboBox = QComboBox()
+        self.monthComboBox.addItem("Année entière")
+        for i in appdata.MOIS:
+            self.monthComboBox.addItem(i)
+        self.dateLayout.addWidget(self.monthComboBox)
 
         self.exportButton = QPushButton("Exporter")
-        self.exportButton.clicked.connect(self.exportcsv("test"))
+        self.exportButton.clicked.connect(self.exportcsv)
 
         layout = QGridLayout()
-        layout.addWidget(self.interetText, 0, 0)
-        layout.addWidget(self.interetComboBox, 1, 0)
-        layout.addWidget(self.dateText, 0, 1)
-        layout.addWidget(self.dateComboBox, 1, 1)
-        layout.addWidget(self.typeText, 2, 0)
-        layout.addWidget(self.typeComboBox, 3, 0)
-        layout.addWidget(self.exportButton, 3, 1)
+        layout.addLayout(self.checkboxLayout, 0, 0)
+        layout.addLayout(self.detailLayout, 1, 0)
+        layout.addLayout(self.dateLayout, 0, 1)
+        layout.addWidget(self.exportButton, 2, 1)
         self.setLayout(layout)
 
     def exportcsv(self, filname : str):
-        self._db = PostulantDB()
-        self._csv = csvManipulator(filname)
-        data = self._db.selectThese(self._db.TABLETODAY, [self._db.EMAIL,
-            self._db.PRENOM, self._db.INTERET])
-        self._csv.write(data)
+        #self._db = PostulantDB()
+        #self._csv = csvManipulator(filname)
+        #data = self._db.selectThese(self._db.TABLETODAY, [self._db.EMAIL,
+        #    self._db.PRENOM, self._db.INTERET])
+        #self._csv.write(data)

@@ -13,7 +13,7 @@ from PySide2.QtCore import QObject, Signal, Slot
 from email.header import decode_header
 
 from threadpool import threaded
-import dict
+import appdata
 from dbsqlite import PostulantDB
 
 class GmailReader():
