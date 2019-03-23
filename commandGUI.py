@@ -13,7 +13,7 @@ class commandGUI(QWidget):
     def __init__(self, parent=None):
         QWidget.__init__(self,parent)
 
-        self._db = None
+        self._db = PostulantDB()
         self._csv = None
 
         self.initUI()
@@ -42,13 +42,13 @@ class commandGUI(QWidget):
 
         self.yearComboBox = QComboBox()
         self.yearComboBox.addItem("Tout les années")
-        for i in range(10):     #REVOIR POUR UNE MEILLEUR MODULARITÉ
-            self.yearComboBox.addItem(str(2019+i))
+        for i in self._setYear(self._db.tableList()):
+            self.yearComboBox.addItem(i)
         self.dateLayout.addWidget(self.yearComboBox)
 
         self.monthComboBox = QComboBox()
         self.monthComboBox.addItem("Année entière")
-        for i in appdata.MOIS:
+        for i in self._setMonth(self._db.tableList()):
             self.monthComboBox.addItem(i)
         self.dateLayout.addWidget(self.monthComboBox)
 
@@ -66,9 +66,6 @@ class commandGUI(QWidget):
         filename = QFileDialog.getSaveFileName(None, "Save F:xile",
             "data/untitled.csv", "*.csv *.db *.xlsx *.odt")
 
-        self._db = PostulantDB()
-        self._csv = csvManipulator(filename[0])
-
         table = (self._db.TABLENAME + self.yearComboBox.currentText()
             + str(self.monthComboBox.currentIndex ()))
 
@@ -76,10 +73,29 @@ class commandGUI(QWidget):
         for i in self.buttonGroup.buttons():
             if i.isChecked():
                 querry.append(appdata.DICTINFO[i.text()])
-        #try:
-        data = self._db.selectThese(table, querry)
-        self._csv.write(data)
-        #except Exception as e:
-        #    self.infoText.setText("Erreur dans l'exportation des données: \n"
-        #        + str(e))
-        #    print(e)
+        try:
+            data = self._db.selectThese(table, querry)
+
+            self._csv = csvManipulator(filename[0])
+            self._csv.write(data)
+        except Exception as e:
+            self.infoText.setText("Erreur dans l'exportation des données: \n"
+                + str(e))
+
+    def _setYear(self, tables : list):
+        seen = set()
+        seen_add = seen.add
+        for i in tables:
+            if i[9:13] not in seen:
+                seen_add(i[9:13])
+                yield i[9:13]
+
+    def _setMonth(self, tables : list):
+        seen = set()
+        seen_add = seen.add
+        for i in tables:
+            if len(seen) == 12:
+                return
+            if i[13:] not in seen:
+                seen_add(i[13:])
+                yield appdata.MOIS[int(i[13:])-1]

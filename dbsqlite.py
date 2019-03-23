@@ -141,7 +141,8 @@ class PostulantDB():
                 items.append(row)
         except sqlite3.OperationalError as e:
             if len(data) == 0:
-                raise Exception("Aucune options sélectionné")
+                raise Exception("Aucune options choisi")
+
         return items
 
     def selectAValue(self, table : str, type : str, data : str):
