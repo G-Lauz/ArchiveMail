@@ -75,9 +75,6 @@ class commandGUI(QWidget):
                 querry.append(appdata.DICTINFO[i.text()])
         try:
             data = self._db.selectThese(table, querry)
-            print(table)
-            print(querry)
-            print(data)
 
             self._csv = csvManipulator(filename[0])
             self._csv.write(data)

@@ -1,6 +1,5 @@
 # -*-coding:Latin-1 -*
 import imaplib as imap
-
 import pickle
 import os.path
 import email
@@ -8,9 +7,9 @@ from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from bs4 import BeautifulSoup as bs
-
 from PySide2.QtCore import QObject, Signal, Slot
 from email.header import decode_header
+import string
 
 from threadpool import threaded
 import appdata
@@ -92,12 +91,8 @@ class GmailReader():
                     raise Exception("Erreur en lisant le message {}".format(index))
 
                 msg = email.message_from_bytes(data[0][1])
-                print("Message {}: {}".format(index,msg['Subject']))
-                print("From {}".format(msg["From"]))
 
-                print("=====================================================")
                 self._storedata(self._getdata(msg))
-                print("=====================================================\n")
 
     def _html2string(self, payload):
         soup = bs(payload, "html.parser")
@@ -134,12 +129,12 @@ class GmailReader():
                 return None
 
             def site(m):
-                for i in dict.SITE:
+                for i in appdata.SITE:
                     if i in m:
                         return i
 
             if site(message) == "Jobboom":
-                return dict.Bunch(
+                return appdata.Bunch(
                     email= listLine[24],
                     sexe= None, #à faire
                     prenom= listLine[19].split()[0],
@@ -148,22 +143,24 @@ class GmailReader():
                     site="Jobboom"
                     )
             elif site(message) == ".ca":
-                return dict.Bunch(
+                return appdata.Bunch(
                     email= listLine[20],
                     sexe= None, #à faire
-                    prenom= listLine[13],
-                    nom= listLine[15],
+                    prenom= self._cleanName(listLine[13]),
+                    nom= self._cleanName(listLine[15]),
                     interet= listLine[25], #à faire
                     site=".ca"
                     )
-            else:
-                return None
 
     def _storedata(self, adict : dict):
-        if type(adict) != dict: #TROUVER UNE MEILLEUR SOLUTION
-            return
         self._db = PostulantDB()
         self._db.insert(**adict)
+
+    def _cleanName(self, name : str):
+        unwanted = string.punctuation
+        for i in name.split():
+            tmp = ''.join(char for char in i if char not in unwanted)
+        return tmp
 
     #===========================================================================
     # get
