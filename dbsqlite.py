@@ -39,7 +39,7 @@ class PostulantDB():
 
     #Constructeur de la class
     def __init__(self):
-        self._DBFILE = "postulantdb.db"
+        self._DBFILE = "data/postulantdb.db"
         self._TABLENAME = "POSTULANT"
         self._conn = None
         self._cursor = None

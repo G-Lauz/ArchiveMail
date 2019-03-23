@@ -1,4 +1,8 @@
-*.db
 __pycache__
+data
+secret
 dict.py
+*.db
 *.csv
+*.json
+*.pickle

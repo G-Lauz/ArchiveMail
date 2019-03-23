@@ -20,7 +20,7 @@ class GmailReader():
 
     def __init__(self, username=None):
         self._SCOPES = ["https://mail.google.com/"]
-        self._CLIENT_SECRET = "../client_secret.json"
+        self._CLIENT_SECRET = "secret/client_secret.json"
         self._API_SERVICE_NAME = "gmail"
         self._API_VERSION = "v1"
 
@@ -40,8 +40,8 @@ class GmailReader():
 
     def _get_authenticated(self):
         credentials = None
-        if os.path.exists('../token.pickle'):
-            with open('../token.pickle', 'rb') as token:
+        if os.path.exists('secret/token.pickle'):
+            with open('secret/token.pickle', 'rb') as token:
                 credentials = pickle.load(token)
         #Login si il n'y a pas d'indentifiant valide
         if not credentials or not credentials.valid:
@@ -56,7 +56,7 @@ class GmailReader():
                     success_message="""L'authentification est terminer vous pouvez fermer cette page""",
                     open_browser=True)
                 #Enregistrer l'identifiant pour la prochaine exécution
-                with open('../token.pickle', 'wb') as token:
+                with open('secret/token.pickle', 'wb') as token:
                     pickle.dump(credentials, token)
         return credentials
 
@@ -67,7 +67,7 @@ class GmailReader():
             mail.authenticate('XOAUTH2', lambda x: auth_string)
             return mail
         except Exception:
-            os.remove('../token.pickle')
+            os.remove('secret/token.pickle')
             self.credentials = self._get_authenticated()
             return self._imap_connection()
 

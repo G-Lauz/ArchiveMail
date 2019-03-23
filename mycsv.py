@@ -7,8 +7,9 @@ class csvManipulator():
         self.filename = filename
 
     def write(self, items):
-        with open(self.filename + ".csv", 'w', newline='') as csvfile:
-            writer = csv.writer(csvfile, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        with open('data/' + self.filename + ".csv", 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile, delimiter=';', quotechar='|',
+                quoting=csv.QUOTE_MINIMAL)
             writer.writerows(items)
 
     def read(self, filename : str, format : str):
