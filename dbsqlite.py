@@ -136,8 +136,12 @@ class PostulantDB():
 
         command = command + "from {}".format(self._scrub(table))
 
-        for row in self.cursor.execute(command).fetchall():
-            items.append(row)
+        try:
+            for row in self.cursor.execute(command).fetchall():
+                items.append(row)
+        except sqlite3.OperationalError as e:
+            if len(data) == 0:
+                raise Exception("Aucune options sélectionné")
         return items
 
     def selectAValue(self, table : str, type : str, data : str):

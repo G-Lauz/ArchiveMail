@@ -4,7 +4,7 @@ class csvManipulator():
 
     def __init__(self, filename : str):
 
-        self.filename = 'data/' + filename + ".csv"
+        self.filename = filename
 
     def write(self, items):
         with open(self.filename, 'w', newline='') as csvfile:

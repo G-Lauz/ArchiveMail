@@ -12,7 +12,7 @@ class mainGUI(QMainWindow):
         super(mainGUI, self).__init__()
 
         self.setWindowTitle("ArchiveMail")
-        self.setFixedSize(400,240)
+        self.setFixedSize(400,300)
 
         self.stacked = stackedGUI.stackedGUI()
         self.setCentralWidget(self.stacked)

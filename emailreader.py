@@ -156,6 +156,8 @@ class GmailReader():
                     interet= listLine[25], #à faire
                     site=".ca"
                     )
+            else:
+                return None
 
     def _storedata(self, adict : dict):
         if type(adict) != dict: #TROUVER UNE MEILLEUR SOLUTION

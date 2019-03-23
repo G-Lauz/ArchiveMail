@@ -65,10 +65,21 @@ class commandGUI(QWidget):
     def exportcsv(self, filname : str):
         filename = QFileDialog.getSaveFileName(None, "Save F:xile",
             "data/untitled.csv", "*.csv *.db *.xlsx *.odt")
-        print(filename)
 
-        #self._db = PostulantDB()
-        #self._csv = csvManipulator(filname)
-        #data = self._db.selectThese(self._db.TABLETODAY, [self._db.EMAIL,
-        #    self._db.PRENOM, self._db.INTERET])
-        #self._csv.write(data)
+        self._db = PostulantDB()
+        self._csv = csvManipulator(filename[0])
+
+        table = (self._db.TABLENAME + self.yearComboBox.currentText()
+            + str(self.monthComboBox.currentIndex ()))
+
+        querry = list()
+        for i in self.buttonGroup.buttons():
+            if i.isChecked():
+                querry.append(appdata.DICTINFO[i.text()])
+        #try:
+        data = self._db.selectThese(table, querry)
+        self._csv.write(data)
+        #except Exception as e:
+        #    self.infoText.setText("Erreur dans l'exportation des données: \n"
+        #        + str(e))
+        #    print(e)
