@@ -2,7 +2,7 @@ import sys
 from PySide2 import QtWidgets, QtGui, QtCore
 from PySide2.QtCore import QObject, Signal, Slot
 from PySide2.QtWidgets import (QWidget, QGridLayout, QComboBox, QPushButton,
-    QLabel, QVBoxLayout, QButtonGroup, QCheckBox)
+    QLabel, QVBoxLayout, QButtonGroup, QCheckBox, QFileDialog)
 
 from mycsv import csvManipulator
 from dbsqlite import PostulantDB
@@ -63,6 +63,10 @@ class commandGUI(QWidget):
         self.setLayout(layout)
 
     def exportcsv(self, filname : str):
+        filename = QFileDialog.getSaveFileName(None, "Save F:xile",
+            "data/untitled.csv", "*.csv *.db *.xlsx *.odt")
+        print(filename)
+
         #self._db = PostulantDB()
         #self._csv = csvManipulator(filname)
         #data = self._db.selectThese(self._db.TABLETODAY, [self._db.EMAIL,
