@@ -97,24 +97,6 @@ class GmailReader():
 
                 print("=====================================================")
                 self._storedata(self._getdata(msg))
-
-                alist = [self._db.EMAIL,self._db.PRENOM]
-                #print(self._db.select(self._db.TABLETODAY, self._db.EMAIL))
-                #print("\n")
-                #print(self._db.selectThese(self._db.TABLETODAY, alist))
-                #print(self._db.tableList())
-
-                #test = 0
-                #if msg.is_multipart():
-                    #self.readType(list(msg.walk()), fipart=3, fpart=True)
-                #    for part in msg.walk():
-                #        test+=1
-                #        print(self.readType(part))
-
-                #        print("///////////\n     {}     \n///////////".format(test))
-                #else:
-                #    print(self.readType(msg))
-
                 print("=====================================================\n")
 
     def _html2string(self, payload):
@@ -144,8 +126,12 @@ class GmailReader():
 
     def _getdata(self, msg):
         if msg.is_multipart():
-            message = self._readType(list(msg.walk()), fipart=3, fpart=True)
-            listLine = message.splitlines()
+            if len(list(msg.walk())) >= 3:  #TROUVER UNE MEILLEUR SOLUTION
+                message = self._readType(list(msg.walk()), fipart=3, fpart=True)
+                listLine = message.splitlines()
+            else:
+                print("return")
+                return None
 
             def site(m):
                 for i in dict.SITE:
@@ -172,6 +158,8 @@ class GmailReader():
                     )
 
     def _storedata(self, adict : dict):
+        if type(adict) != dict: #TROUVER UNE MEILLEUR SOLUTION
+            return
         self._db = PostulantDB()
         self._db.insert(**adict)
 
