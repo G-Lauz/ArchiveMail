@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup as bs
 from PySide2.QtCore import QObject, Signal, Slot
 from email.header import decode_header
 import string
+import csv
 
 from threadpool import threaded
 import appdata
@@ -35,6 +36,8 @@ class GmailReader():
         self.mail = self._imap_connection()
 
         self._updateProgress = Signal(float)
+
+        self._initNameList()
 
 
     def _get_authenticated(self):
@@ -136,7 +139,7 @@ class GmailReader():
             if site(message) == "Jobboom":
                 return appdata.Bunch(
                     email= listLine[24],
-                    sexe= None, #à faire
+                    sexe= self._defineSexe(listLine[19].split()[0]),
                     prenom= listLine[19].split()[0],
                     nom= "".join(i for i in listLine[19].split()[1:]),
                     interet= listLine[15], #à faire
@@ -145,9 +148,9 @@ class GmailReader():
             elif site(message) == ".ca":
                 return appdata.Bunch(
                     email= listLine[20],
-                    sexe= None, #à faire
-                    prenom= self._cleanName(listLine[13]),
-                    nom= self._cleanName(listLine[15]),
+                    sexe= self._defineSexe(listLine[13][2:]),
+                    prenom= listLine[13][2:],
+                    nom= listLine[15][2:],
                     interet= listLine[25], #à faire
                     site=".ca"
                     )
@@ -158,9 +161,27 @@ class GmailReader():
 
     def _cleanName(self, name : str):
         unwanted = string.punctuation
-        for i in name.split():
-            tmp = ''.join(char for char in i if char not in unwanted)
+        tmp = ''.join(char for char in name if char not in unwanted)
         return tmp
+
+    def _initNameList(self):
+        with open("data/filles1980-2017.csv", 'r') as csvfile:
+            reader = csv.reader(csvfile)
+            self._filles = list([i[0] for i in reader])
+
+        with open("data/gars1980-2017.csv", 'r') as csvfile:
+            reader = csv.reader(csvfile)
+            self._gars = list([i[0] for i in reader])
+
+    def _defineSexe(self, firstname : str):
+        if firstname.upper() in (self._filles and self._gars):
+            return None
+        elif firstname.upper() in self._filles:
+            return "Madame"
+        elif firstname.upper() in self._gars:
+            return "Monsieur"
+        else:
+            return None
 
     #===========================================================================
     # get
