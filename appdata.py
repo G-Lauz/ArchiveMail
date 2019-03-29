@@ -1,6 +1,6 @@
 class Data():
     def readAdmin(self):
-        with open("data/Domaines/Administration-soutien-et-services.text",
+        with open("data/Domaines/Administration-soutien-et-services.txt",
             'r') as file:
             return file.read()
 
@@ -27,7 +27,9 @@ class Data():
 
     def readSite(self):
         with open("data/site.txt", 'r') as file:
-            return file.read()
+            textbyline = file.readlines()
+            alist = [i.strip() for i in textbyline]
+            return alist
 
     def readInfo(self):
         with open("data/info.txt", 'r') as file:

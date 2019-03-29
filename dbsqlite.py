@@ -270,15 +270,15 @@ class PostulantDB():
 #Main temporaire pour tester la class individuellement
 if __name__ == "__main__":
     db = PostulantDB()
-    db.insert(email="etienne@gmail.com",prenom="etienne", interet="Mecanique")
-    alist = [db.EMAIL,db.PRENOM]
-    print(db.select(db.TABLETODAY, db.EMAIL))
-    print("\n")
+    #db.insert(email="etienne@gmail.com",prenom="etienne", interet="Mecanique")
+    alist = [db.EMAIL,db.PRENOM, db.SEXE, db.INTERET, db.SITE]
+    #print(db.select(db.TABLETODAY, db.EMAIL))
+    #print("\n")
     print(db.selectThese(db.TABLETODAY, alist))
-    print("\n")
-    print(db.selectAValue(db.TABLETODAY, db.PRENOM, "etienne"))
-    print("\n")
-    print(db.countAValue(db.TABLETODAY, db.PRENOM, "etienne"))
+    #print("\n")
+    #print(db.selectAValue(db.TABLETODAY, db.PRENOM, "etienne"))
+    #print("\n")
+    #print(db.countAValue(db.TABLETODAY, db.PRENOM, "etienne"))
 
     #db.deleteTable(db.TABLENAME, 2019, 2)
     print(db.tableList())

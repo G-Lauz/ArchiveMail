@@ -34,6 +34,7 @@ class commandGUI(QWidget):
         self.detailText = QLabel("Détails :")
         self.detailLayout.addWidget(self.detailText)
         self.infoText = QLabel()
+        self.infoText.setWordWrap(True)
         self.detailLayout.addWidget(self.infoText)
 
         self.dateLayout = QVBoxLayout()
@@ -74,7 +75,6 @@ class commandGUI(QWidget):
             if i.isChecked():
                 querry.append(Data().DICTINFO[i.text()])
         try:
-            print(table, querry)
             data = self._db.selectThese(table, querry)
 
             self._csv = csvManipulator(filename[0])

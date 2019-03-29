@@ -14,6 +14,7 @@ import csv
 
 from threadpool import threaded
 import appdata
+from appdata import Data
 from dbsqlite import PostulantDB
 
 class GmailReader():
@@ -93,7 +94,7 @@ class GmailReader():
                 if rv != 'OK':
                     raise Exception("Erreur en lisant le message {}".format(index))
 
-                msg = email.message_from_bytes(data[0][1])
+                msg = email.message_from_bytes(data[0][1]) #MESSAGE
 
                 self._storedata(self._getdata(msg))
 
@@ -132,7 +133,7 @@ class GmailReader():
                 return None
 
             def site(m):
-                for i in appdata.Data().SITE:
+                for i in Data().SITE:
                     if i in m:
                         return i
 
@@ -142,17 +143,17 @@ class GmailReader():
                     sexe= self._defineSexe(listLine[19].split()[0]),
                     prenom= listLine[19].split()[0],
                     nom= "".join(i for i in listLine[19].split()[1:]),
-                    interet= listLine[15], #à faire
+                    interet= self._defineInteret(listLine[15]),
                     site="Jobboom"
                     )
-            elif site(message) == ".ca":
+            elif site(message) == "Camionneur.ca":
                 return appdata.Bunch(
                     email= listLine[20],
                     sexe= self._defineSexe(listLine[13][2:]),
                     prenom= listLine[13][2:],
                     nom= listLine[15][2:],
-                    interet= listLine[25][2:], #à faire
-                    site=".ca"
+                    interet= self._defineInteret(listLine[25][2:]),
+                    site="Camionneur.ca"
                     )
 
     def _storedata(self, adict : dict):
@@ -184,6 +185,25 @@ class GmailReader():
             return "Monsieur"
         else:
             return None
+
+    def _defineInteret(self, work : str):
+        dt = Data()
+        interet = work.lower()
+        if interet in dt.readAdmin():
+            return "Administration, soutien et services"
+        elif interet in dt.readGenie():
+            return "Genie"
+        elif interet in dt.readManuels():
+            return "Metiers manuels"
+        elif interet in dt.readOp():
+            return "Operations tactiques et securite"
+        elif interet in dt.readMedic():
+            return "Soins de la sante"
+        elif interet in dt.readTech():
+            return "Technologies"
+        else:
+            print(interet)
+            return
 
     #===========================================================================
     # get
