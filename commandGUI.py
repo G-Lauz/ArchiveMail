@@ -42,7 +42,7 @@ class commandGUI(QWidget):
         self.dateLayout.addWidget(self.dateText)
 
         self.yearComboBox = QComboBox()
-        self.yearComboBox.addItem("Tout les années")
+        #self.yearComboBox.addItem("Tout les années")
         for i in self._setYear(self._db.tableList()):
             self.yearComboBox.addItem(i)
         self.dateLayout.addWidget(self.yearComboBox)
@@ -67,21 +67,39 @@ class commandGUI(QWidget):
         filename = QFileDialog.getSaveFileName(None, "Save F:xile",
             "data/untitled.csv", "*.csv *.db *.xlsx *.odt")
 
-        table = (self._db.TABLENAME + self.yearComboBox.currentText()
-            + str(Data().DICTMOIS[self.monthComboBox.currentText ()]))
+        table = self._getTables()
 
         querry = list()
         for i in self.buttonGroup.buttons():
             if i.isChecked():
                 querry.append(Data().DICTINFO[i.text()])
-        try:
-            data = self._db.selectThese(table, querry)
 
+        try:
             self._csv = csvManipulator(filename[0])
-            self._csv.write(data)
+
+            fulldata = []
+            for i in table:
+                data = self._db.selectThese(i, querry)
+                for j in data:
+                    fulldata.append(j)
+
+            self._csv.write(fulldata)
+
         except Exception as e:
             self.infoText.setText("Erreur dans l'exportation des données: \n"
                 + str(e))
+
+    def _getTables(self):
+        if self.monthComboBox.currentIndex() != 0:
+            return [self._db.TABLENAME + self.yearComboBox.currentText()
+                + str(Data().DICTMOIS[self.monthComboBox.currentText ()])]
+        else:
+            alist = []
+            for i in self._db.tableList():
+                if self.yearComboBox.currentText() in i:
+                    alist.append(self._db.TABLENAME +
+                        self.yearComboBox.currentText() + i[13:])
+            return alist
 
     def _setYear(self, tables : list):
         seen = set()
