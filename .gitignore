@@ -1,7 +1,6 @@
 __pycache__
 data
 secret
-appdata.py
 *.db
 *.csv
 *.json

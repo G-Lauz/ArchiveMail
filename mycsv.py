@@ -12,6 +12,7 @@ class csvManipulator():
                 quoting=csv.QUOTE_MINIMAL)
             writer.writerows(items)
 
+    #INUTILE
     def read(self):
         with open(self.filename, 'rb') as csvfile:
             reader = csv.reader(csvfile)

@@ -29,6 +29,7 @@ class readGUI(QWidget, GmailReader):
         self.detailTitle = QLabel("Détails :")
 
         self.detailText = QLabel(" ")
+        self.detailText.setWordWrap(True)
 
         layout = QVBoxLayout()
         layout.addWidget(self.readButton)
@@ -53,5 +54,6 @@ class readGUI(QWidget, GmailReader):
         self.detailText.setText("Lecture...")
 
         def exception_hook(type, value, tb):
-            self.detailText.setText(str(value))
+            self.detailText.setText(str(value) + '\n' + "--------------------\n"
+                + str(traceback.format_exception(type,value,tb)[-2:-1]).strip())
         sys.excepthook = exception_hook

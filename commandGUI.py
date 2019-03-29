@@ -6,7 +6,7 @@ from PySide2.QtWidgets import (QWidget, QGridLayout, QComboBox, QPushButton,
 
 from mycsv import csvManipulator
 from dbsqlite import PostulantDB
-import appdata
+from appdata import Data
 
 class commandGUI(QWidget):
 
@@ -24,7 +24,7 @@ class commandGUI(QWidget):
         self.checkboxLayout.addWidget(self.choiceText)
 
         self.buttonGroup = QButtonGroup()
-        for i, info in enumerate(appdata.INFO):
+        for i, info in enumerate(Data().INFO):
             checkbox = QCheckBox(info, self)
             self.buttonGroup.addButton(checkbox, i)
             self.checkboxLayout.addWidget(checkbox)
@@ -67,13 +67,14 @@ class commandGUI(QWidget):
             "data/untitled.csv", "*.csv *.db *.xlsx *.odt")
 
         table = (self._db.TABLENAME + self.yearComboBox.currentText()
-            + str(appdata.DICTMOIS[self.monthComboBox.currentText ()]))
+            + str(Data().DICTMOIS[self.monthComboBox.currentText ()]))
 
         querry = list()
         for i in self.buttonGroup.buttons():
             if i.isChecked():
-                querry.append(appdata.DICTINFO[i.text()])
+                querry.append(Data().DICTINFO[i.text()])
         try:
+            print(table, querry)
             data = self._db.selectThese(table, querry)
 
             self._csv = csvManipulator(filename[0])
@@ -98,4 +99,4 @@ class commandGUI(QWidget):
                 return
             if i[13:] not in seen:
                 seen_add(i[13:])
-                yield appdata.MOIS[int(i[13:])-1]
+                yield Data().MOIS[int(i[13:])-1]

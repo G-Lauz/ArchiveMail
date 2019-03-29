@@ -132,11 +132,11 @@ class GmailReader():
                 return None
 
             def site(m):
-                for i in appdata.SITE:
+                for i in appdata.Data().SITE:
                     if i in m:
                         return i
 
-            if site(message) == "Jobboom":
+            if site(message) == "Jobboom": #REMPLACER LE STRING
                 return appdata.Bunch(
                     email= listLine[24],
                     sexe= self._defineSexe(listLine[19].split()[0]),
@@ -151,11 +151,13 @@ class GmailReader():
                     sexe= self._defineSexe(listLine[13][2:]),
                     prenom= listLine[13][2:],
                     nom= listLine[15][2:],
-                    interet= listLine[25], #à faire
+                    interet= listLine[25][2:], #à faire
                     site=".ca"
                     )
 
     def _storedata(self, adict : dict):
+        if adict == None:
+            return
         self._db = PostulantDB()
         self._db.insert(**adict)
 
