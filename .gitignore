@@ -5,3 +5,7 @@ secret
 *.csv
 *.json
 *.pickle
+build
+dist
+setup.py
+mainGUI.spec
