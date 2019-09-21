@@ -16,6 +16,7 @@ from utils.threadpool import threaded
 import utils.appdata as appdata
 from utils.appdata import Data
 from utils.dbsqlite import PostulantDB
+from utils.myxml import xmlManipulator
 
 class GmailReader():
 
@@ -39,6 +40,8 @@ class GmailReader():
         self._updateProgress = Signal(float)
 
         self._initNameList()
+
+        self.sites = xmlManipulator('site.xml')
 
 
     def _get_authenticated(self):
@@ -151,6 +154,7 @@ class GmailReader():
             for i, item in enumerate(listLine):
                 print(str(i) + " ..... " + item);
 
+'''
             if site(message) == "Jobboom": #REMPLACER LE STRING
                 return appdata.Bunch(
                     email= listLine[37],
@@ -169,6 +173,7 @@ class GmailReader():
                     interet= self._defineInteret(listLine[39][2:]),
                     site="Camionneur.ca"
                     )
+'''
 
     def _storedata(self, adict : dict):
         if adict == None:
