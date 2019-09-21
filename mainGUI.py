@@ -4,7 +4,7 @@ from PySide2.QtCore import QObject, Signal, Slot
 from PySide2.QtWidgets import (QApplication, QMainWindow, QWidget, QMenuBar,
     QAction)
 
-import stackedGUI
+import gui.stackedGUI as stackedGUI
 
 class mainGUI(QMainWindow):
 

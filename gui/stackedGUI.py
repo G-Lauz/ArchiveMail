@@ -4,9 +4,9 @@ from PySide2.QtCore import QObject, Signal, Slot
 from PySide2.QtWidgets import (QApplication, QStackedWidget, QWidget, QMenuBar,
     QAction)
 
-import homeGUI
-import readGUI
-import commandGUI
+import gui.homeGUI as homeGUI
+import gui.readGUI as readGUI
+import gui.commandGUI as commandGUI
 
 class stackedGUI(QStackedWidget):
 

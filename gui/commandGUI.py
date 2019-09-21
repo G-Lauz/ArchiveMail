@@ -4,9 +4,9 @@ from PySide2.QtCore import QObject, Signal, Slot
 from PySide2.QtWidgets import (QWidget, QGridLayout, QComboBox, QPushButton,
     QLabel, QVBoxLayout, QButtonGroup, QCheckBox, QFileDialog)
 
-from mycsv import csvManipulator
-from dbsqlite import PostulantDB
-from appdata import Data
+from utils.mycsv import csvManipulator
+from utils.dbsqlite import PostulantDB
+from utils.appdata import Data
 
 class commandGUI(QWidget):
 

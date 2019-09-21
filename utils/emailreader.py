@@ -12,10 +12,10 @@ from email.header import decode_header
 import string
 import csv
 
-from threadpool import threaded
-import appdata
-from appdata import Data
-from dbsqlite import PostulantDB
+from utils.threadpool import threaded
+import utils.appdata as appdata
+from utils.appdata import Data
+from utils.dbsqlite import PostulantDB
 
 class GmailReader():
 
