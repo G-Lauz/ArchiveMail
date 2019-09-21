@@ -97,6 +97,10 @@ class GmailReader():
                 msg = email.message_from_bytes(data[0][1]) #MESSAGE
 
                 self._storedata(self._getdata(msg))
+                #self._getdata(msg)
+                print('\nNew message')
+                #for i in self._structure(msg):
+                #    print(i)
 
     def _html2string(self, payload):
         soup = bs(payload, "html.parser")
@@ -108,16 +112,23 @@ class GmailReader():
         self.mail.close()
         self.mail.logout()
 
-    def _readType(self, msg: list, fipart=3, fpart=False):
-        if fpart:
-            msg = msg[fipart]
+    def _structure(self, msg):
+        for part in msg.walk():
+            if part.is_multipart():
+                yield part.get_content_type()
+            else:
+                yield '    ' + part.get_content_type()
+
+    def _readType(self, msg):
 
         if msg.get_content_type() == 'text/plain':
+            print("Plain text")
             try:
                 return msg.get_payload(decode=True).decode('utf-8')
             except UnicodeDecodeError:
                 return msg.get_payload(decode=True).decode('latin-1')
         elif msg.get_content_type() == 'text/html':
+            print("HTML")
             try:
                 return self._html2string(msg.get_payload(decode=True).decode('utf-8'))
             except UnicodeDecodeError:
@@ -125,8 +136,8 @@ class GmailReader():
 
     def _getdata(self, msg):
         if msg.is_multipart():
-            if len(list(msg.walk())) >= 3:  #TROUVER UNE MEILLEUR SOLUTION
-                message = self._readType(list(msg.walk()), fipart=3, fpart=True)
+            if len(list(msg.walk())) >= 3 + 1:  #TROUVER UNE MEILLEUR SOLUTION
+                message = self._readType(list(msg.walk())[3])
                 listLine = message.splitlines()
             else:
                 print("return")
@@ -137,22 +148,25 @@ class GmailReader():
                     if i in m:
                         return i
 
+            for i, item in enumerate(listLine):
+                print(str(i) + " ..... " + item);
+
             if site(message) == "Jobboom": #REMPLACER LE STRING
                 return appdata.Bunch(
-                    email= listLine[24],
-                    sexe= self._defineSexe(listLine[19].split()[0]),
-                    prenom= listLine[19].split()[0],
-                    nom= "".join(i for i in listLine[19].split()[1:]),
-                    interet= self._defineInteret(listLine[15]),
+                    email= listLine[37],
+                    sexe= self._defineSexe(listLine[32].split()[0]),
+                    prenom= listLine[32].split()[0],
+                    nom= "".join(i for i in listLine[32].split()[1:]),
+                    interet= self._defineInteret(listLine[28]),
                     site="Jobboom"
                     )
             elif site(message) == "Camionneur.ca":
                 return appdata.Bunch(
-                    email= listLine[20],
-                    sexe= self._defineSexe(listLine[13][2:]),
-                    prenom= listLine[13][2:],
-                    nom= listLine[15][2:],
-                    interet= self._defineInteret(listLine[25][2:]),
+                    email= listLine[34],
+                    sexe= self._defineSexe(listLine[27][2:]),
+                    prenom= listLine[27][2:],
+                    nom= listLine[29][2:],
+                    interet= self._defineInteret(listLine[39][2:]),
                     site="Camionneur.ca"
                     )
 
