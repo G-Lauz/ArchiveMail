@@ -101,7 +101,7 @@ class GmailReader():
 
                 self._storedata(self._getdata(msg))
                 #self._getdata(msg)
-                print('\nNew message')
+                print('\n\n')
                 #for i in self._structure(msg):
                 #    print(i)
 
@@ -152,28 +152,30 @@ class GmailReader():
                         return i
 
             for i, item in enumerate(listLine):
-                print(str(i) + " ..... " + item);
+                print(str(i) + " ..... " + item)
 
-'''
-            if site(message) == "Jobboom": #REMPLACER LE STRING
-                return appdata.Bunch(
-                    email= listLine[37],
-                    sexe= self._defineSexe(listLine[32].split()[0]),
-                    prenom= listLine[32].split()[0],
-                    nom= "".join(i for i in listLine[32].split()[1:]),
-                    interet= self._defineInteret(listLine[28]),
-                    site="Jobboom"
-                    )
-            elif site(message) == "Camionneur.ca":
-                return appdata.Bunch(
-                    email= listLine[34],
-                    sexe= self._defineSexe(listLine[27][2:]),
-                    prenom= listLine[27][2:],
-                    nom= listLine[29][2:],
-                    interet= self._defineInteret(listLine[39][2:]),
-                    site="Camionneur.ca"
-                    )
-'''
+            for id in self.sites.getChildId(self.sites.root):
+                childs = self.sites.getChildTextbyId(id)
+                if childs['site'] in message:
+                    return appdata.Bunch(
+                        email= listLine[childs['email']],
+                        sexe= self._defineSexe(listLine[childs['prenom']].strip(":").strip()),
+                        prenom= listLine[childs['prenom']].strip(":").strip(),
+                        nom= listLine[childs['nom']].strip(":").strip(),
+                        interet= self._defineInteret(listLine[childs['interet']].strip(":").strip()),
+                        site= childs['site']
+                        )
+
+    def getdataList(self, msg):
+        if msg.is_multipart():
+            if len(list(msg.walk())) >= 3 + 1:  #TROUVER UNE MEILLEUR SOLUTION
+                message = self._readType(list(msg.walk())[3])
+                listLine = message.splitlines()
+            else:
+                print("return")
+                return None
+
+            return listLine
 
     def _storedata(self, adict : dict):
         if adict == None:

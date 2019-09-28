@@ -7,6 +7,7 @@ from PySide2.QtWidgets import (QApplication, QStackedWidget, QWidget, QMenuBar,
 import gui.homeGUI as homeGUI
 import gui.readGUI as readGUI
 import gui.commandGUI as commandGUI
+import gui.addGUI as addGUI
 
 class stackedGUI(QStackedWidget):
 
@@ -28,6 +29,11 @@ class stackedGUI(QStackedWidget):
 
     def openLire(self):
         self.setCurrentWidget(self.read)
+
+    def openAdd(self):
+        self.add = addGUI.addGUI()
+        self.addWidget(self.add)
+        self.setCurrentWidget(self.add)
 
     @Slot(str)
     def openRead(self, username):

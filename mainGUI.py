@@ -12,7 +12,7 @@ class mainGUI(QMainWindow):
         super(mainGUI, self).__init__()
 
         self.setWindowTitle("ArchiveMail")
-        self.setFixedSize(400,300)
+        #self.setFixedSize(400,300)
 
         self.stacked = stackedGUI.stackedGUI()
         self.setCentralWidget(self.stacked)
@@ -25,11 +25,14 @@ class mainGUI(QMainWindow):
             triggered=self.stacked.openLire)
         self.exportAct = QAction("&Exporter",statusTip="un test",
             triggered=self.stacked.openCommand)
+        self.addAct = QAction("&Ajouter un site", statusTip="un test",
+            triggered=self.stacked.openAdd)
 
     def createMenus(self):
         self.fileMenu = self.menuBar().addMenu("&File")
         self.fileMenu.addAction(self.readAct)
         self.fileMenu.addAction(self.exportAct)
+        self.fileMenu.addAction(self.addAct)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
