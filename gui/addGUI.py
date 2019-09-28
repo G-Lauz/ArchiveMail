@@ -7,21 +7,26 @@ from PySide2.QtWidgets import (QWidget, QPushButton, QLabel, QVBoxLayout,
 from utils.emailreader import GmailReader
 
 class ScrollQLabel(QWidget):
-    def __init__(self, list, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         QWidget.__init__(self, *args, **kwargs)
 
         self.content = QWidget()
-        lay = QVBoxLayout(self.content)
-        for i, item in enumerate(list):
-            lay.addWidget(QLabel(str(i) + " ..... "+ item, self))
+        self.lay = QVBoxLayout(self.content)
+        self.lay.addStretch()
 
-        scroll = QScrollArea()
-        scroll.setWidget(self.content)
-        scroll.setWidgetResizable(True)
+        self.scroll = QScrollArea()
+        self.scroll.setWidgetResizable(True)
+        self.scroll.setWidget(self.content)
+
         self.layout = QVBoxLayout(self)
-        self.layout.addWidget(scroll)
+        self.layout.addWidget(self.scroll)
+
         #self.layout().addWidget(scroll, 0,0,1, self.layout().columnCount())
         self.setStyleSheet("QScrollArea{min-width:300 px; min-height: 400px}")
+
+    def setList(self, list):
+        for i, item in enumerate(list):
+            self.lay.insertWidget(self.lay.count() - 1, QLabel(str(i) + " ..... "+ item))
 
 class addGUI(QWidget):
 
@@ -90,9 +95,8 @@ class addGUI(QWidget):
 
         self.selectionLayout.addLayout(self.champLayout)
 
-        #msgList = ["Hello", "World", "Gabriel", "Lauzier", "Hockey"]
-        #self.scrollBox = ScrollQLabel(msgList, None)
-        #self.selectionLayout.addWidget(self.scrollBox)
+        self.scrollBox = ScrollQLabel(None)
+        self.selectionLayout.addWidget(self.scrollBox)
 
         self.layout.addLayout(self.selectionLayout)
 
@@ -103,10 +107,12 @@ class addGUI(QWidget):
 
         self.setLayout(self.layout)
 
-    def openMail():
-        return
+    def openMail(self):
+        msgList = ["Hello", "World", "Gabriel", "Lauzier", "Hockey"]
+        self.scrollBox.setList(msgList)
+        #self.selectionLayout.addWidget(self.scrollBox)
 
-    def writeXML():
+    def writeXML(self):
         return
 
 if __name__ == "__main__":
