@@ -26,7 +26,7 @@ class mainGUI(QMainWindow):
         self.exportAct = QAction("&Exporter",statusTip="un test",
             triggered=self.stacked.openCommand)
         self.addAct = QAction("&Ajouter un site", statusTip="un test",
-            triggered=self.stacked.openAdd)
+            triggered=self.stacked.openAddSite)
 
     def createMenus(self):
         self.fileMenu = self.menuBar().addMenu("&File")

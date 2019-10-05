@@ -28,10 +28,11 @@ class ScrollQLabel(QWidget):
         for i, item in enumerate(list):
             self.lay.insertWidget(self.lay.count() - 1, QLabel(str(i) + " ..... "+ item))
 
-class addGUI(QWidget):
+class addGUI(QWidget, GmailReader):
 
-    def __init__(self, parent=None):
+    def __init__(self, username=None, parent=None):
         QWidget.__init__(self,parent)
+        GmailReader.__init__(self,username=username)
 
         self.initUI()
 

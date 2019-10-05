@@ -11,8 +11,9 @@ import gui.addGUI as addGUI
 
 class stackedGUI(QStackedWidget):
 
-    def __init__(self):
-        super(stackedGUI, self).__init__()
+    def __init__(self, parent=None):
+        QStackedWidget.__init__(self,parent)
+        #super(stackedGUI, self).__init__()
 
         self.setWindowTitle("ArchiveMail")
 
@@ -30,8 +31,8 @@ class stackedGUI(QStackedWidget):
     def openLire(self):
         self.setCurrentWidget(self.read)
 
-    def openAdd(self):
-        self.add = addGUI.addGUI()
+    def openAddSite(self):
+        self.add = addGUI.addGUI(username=self.username)
         self.addWidget(self.add)
         self.setCurrentWidget(self.add)
 
