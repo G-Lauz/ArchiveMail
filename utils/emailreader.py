@@ -141,33 +141,22 @@ class GmailReader():
                 return self._html2string(msg.get_payload(decode=True).decode('latin-1'))
 
     def _getdata(self, msg):
-        if msg.is_multipart():
-            if len(list(msg.walk())) >= 3 + 1:  #TROUVER UNE MEILLEUR SOLUTION
-                message = self._readType(list(msg.walk())[3])
-                listLine = message.splitlines()
-            else:
-                print("return")
-                return None
+        listLine = self.getdataList(msg);
 
-            def site(m):
-                for i in Data().SITE:
-                    if i in m:
-                        return i
+        for i, item in enumerate(listLine):
+            print(str(i) + " ..... " + item)
 
-            for i, item in enumerate(listLine):
-                print(str(i) + " ..... " + item)
-
-            for id in self.sites.getChildId(self.sites.root):
-                childs = self.sites.getChildTextbyId(id)
-                if childs['site'] in message:
-                    return appdata.Bunch(
-                        email= listLine[childs['email']],
-                        sexe= self._defineSexe(listLine[childs['prenom']].strip(":").strip()),
-                        prenom= listLine[childs['prenom']].strip(":").strip(),
-                        nom= listLine[childs['nom']].strip(":").strip(),
-                        interet= self._defineInteret(listLine[childs['interet']].strip(":").strip()),
-                        site= childs['site']
-                        )
+        for id in self.sites.getChildId(self.sites.root):
+            childs = self.sites.getChildTextbyId(id)
+            if childs['site'] in message:
+                return appdata.Bunch(
+                    email= listLine[childs['email']],
+                    sexe= self._defineSexe(listLine[childs['prenom']].strip(":").strip()),
+                    prenom= listLine[childs['prenom']].strip(":").strip(),
+                    nom= listLine[childs['nom']].strip(":").strip(),
+                    interet= self._defineInteret(listLine[childs['interet']].strip(":").strip()),
+                    site= childs['site']
+                    )
 
     def getdataList(self, msg):
         if msg.is_multipart():
