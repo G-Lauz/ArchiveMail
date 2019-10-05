@@ -141,7 +141,13 @@ class GmailReader():
                 return self._html2string(msg.get_payload(decode=True).decode('latin-1'))
 
     def _getdata(self, msg):
-        listLine = self.getdataList(msg);
+        if msg.is_multipart():
+            if len(list(msg.walk())) >= 3 + 1:  #TROUVER UNE MEILLEUR SOLUTION
+                message = self._readType(list(msg.walk())[3])
+                listLine = message.splitlines()
+            else:
+                print("return")
+                return None
 
         for i, item in enumerate(listLine):
             print(str(i) + " ..... " + item)
