@@ -79,7 +79,7 @@ class GmailReader():
 
 
     @threaded
-    def readMail(self, select="INBOX", critere="ALL"):
+    def readMail(self, select="INBOX", critere="ALL", callback=None):
         rv, data = self.mail.select(select)
         if rv == 'OK':
             rv, data = self.mail.search(None, critere)
@@ -99,11 +99,14 @@ class GmailReader():
 
                 msg = email.message_from_bytes(data[0][1]) #MESSAGE
 
-                self._storedata(self._getdata(msg))
-                #self._getdata(msg)
-                print('\n\n')
-                #for i in self._structure(msg):
-                #    print(i)
+                if callback:
+                    callback(msg);
+                else:
+                    self._storedata(self._getdata(msg))
+                    #self._getdata(msg)
+                    print('\n\n')
+                    #for i in self._structure(msg):
+                    #    print(i)
 
     def _html2string(self, payload):
         soup = bs(payload, "html.parser")
