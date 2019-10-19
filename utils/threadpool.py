@@ -29,4 +29,6 @@ def threaded(fct):
 
         progress.exception.connect(error)
         progress.start()
+
+    wrapper._original = fct
     return wrapper

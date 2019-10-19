@@ -34,6 +34,8 @@ class addGUI(QWidget, GmailReader):
         QWidget.__init__(self,parent)
         GmailReader.__init__(self,username=username)
 
+        self.msgList = []
+
         self.initUI()
 
     def initUI(self):
@@ -110,8 +112,13 @@ class addGUI(QWidget, GmailReader):
 
     def openMail(self):
         msgList = ["Hello", "World", "Gabriel", "Lauzier", "Hockey"]
-        self.scrollBox.setList(msgList)
+        critere = '(SUBJECT "%s")' % self.searchBar.text().encode("utf-8")
+        self.readMail._original(self, critere=critere, callback=self._getMsgList)
+        self.scrollBox.setList(self.msgList)
         #self.selectionLayout.addWidget(self.scrollBox)
+
+    def _getMsgList(self, msg):
+        self.msgList = self.getdataList(msg)
 
     def writeXML(self):
         return

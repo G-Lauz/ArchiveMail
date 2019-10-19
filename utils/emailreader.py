@@ -82,7 +82,7 @@ class GmailReader():
     def readMail(self, select="INBOX", critere="ALL", callback=None):
         rv, data = self.mail.select(select)
         if rv == 'OK':
-            rv, data = self.mail.search(None, critere)
+            rv, data = self.mail.search("utf-8", critere)
             if rv != 'OK':
                 raise Exception("Auncun message")
 
