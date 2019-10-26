@@ -18,9 +18,11 @@ from utils.appdata import Data
 from utils.dbsqlite import PostulantDB
 from utils.myxml import xmlManipulator
 
-class GmailReader():
+class GmailReader(QObject):
 
-    def __init__(self, username=None):
+    def __init__(self, username=None, parent=None):
+        super(self.__class__, self).__init__(parent)
+
         self._SCOPES = ["https://mail.google.com/"]
         self._CLIENT_SECRET = "secret/client_secret.json"
         self._API_SERVICE_NAME = "gmail"
@@ -34,6 +36,10 @@ class GmailReader():
 
         self._db = None
 
+
+    @Slot()
+    def init(self):
+        print("init GmailReader")
         self.credentials = self._get_authenticated()
         self.mail = self._imap_connection()
 
@@ -107,6 +113,31 @@ class GmailReader():
                     print('\n\n')
                     #for i in self._structure(msg):
                     #    print(i)
+
+    def getMailsList(self, select="INBOX", critere="UNSEEN", callback=None):
+        alist = []
+        rv, data = self.mail.select(select)
+
+        if rv == 'OK':
+            rv, data = self.mail.search("utf-8", critere)
+            if rv != 'OK':
+                raise Exception("Auncun message")
+
+            dataLen = len(data[0].split())
+            if dataLen == 0:
+                raise Exception("Auncun message")
+
+            for i,index in enumerate(data[0].split()):
+                rv, data = self.mail.fetch(index, "(RFC822)")
+                if rv != 'OK':
+                    raise Exception("Erreur en lisant le message {}".format(index))
+
+                msg = email.message_from_bytes(data[0][1]) #MESSAGE
+
+                subject = u"".join(msg['subject'])
+                alist.append(subject)
+
+        return alist
 
     def _html2string(self, payload):
         soup = bs(payload, "html.parser")

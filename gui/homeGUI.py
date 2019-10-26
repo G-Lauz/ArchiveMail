@@ -24,5 +24,5 @@ class homeGUI(QWidget):
         user = self.userEdit.text()
         self.userEdited.emit(user)
 
-    class Communicate(QtCore.QObject):
-        speak = Signal(str)
+    #class Communicate(QtCore.QObject):
+        #speak = Signal(str)

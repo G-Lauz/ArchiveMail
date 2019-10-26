@@ -2,7 +2,7 @@ import sys
 from PySide2 import QtWidgets, QtGui, QtCore
 from PySide2.QtCore import QObject, Signal, Slot
 from PySide2.QtWidgets import (QWidget, QPushButton, QLabel, QVBoxLayout,
-    QHBoxLayout, QMessageBox, QLineEdit, QScrollArea)
+    QHBoxLayout, QMessageBox, QComboBox, QLineEdit, QScrollArea)
 
 from utils.emailreader import GmailReader
 
@@ -46,8 +46,14 @@ class addGUI(QWidget, GmailReader):
         self.searchLayout = QHBoxLayout()
         self.searchText = QLabel("Exemple de courriel à ouvrir:")
         self.searchLayout.addWidget(self.searchText)
-        self.searchBar = QLineEdit("Objet")
-        self.searchLayout.addWidget(self.searchBar)
+
+        self.mailsComboBox = QComboBox()
+        for i in self.getMailsList():
+            self.mailsComboBox.addItem(i)
+        self.searchLayout.addWidget(self.mailsComboBox)
+        #self.searchBar = QLineEdit("Objet")
+        #self.searchLayout.addWidget(self.searchBar)
+
         self.openButton = QPushButton("Ouvrir")
         self.openButton.clicked.connect(self.openMail)
         self.searchLayout.addWidget(self.openButton)
@@ -112,12 +118,15 @@ class addGUI(QWidget, GmailReader):
 
     def openMail(self):
         msgList = ["Hello", "World", "Gabriel", "Lauzier", "Hockey"]
-        critere = '(SUBJECT "%s")' % self.searchBar.text().encode("utf-8")
+        critere = b'(SUBJECT "%s")' % self.mailsComboBox.currentText().encode('utf-8')
+        print(type(critere))
         self.readMail._original(self, critere=critere, callback=self._getMsgList)
         self.scrollBox.setList(self.msgList)
-        #self.selectionLayout.addWidget(self.scrollBox)
+
+        self.selectionLayout.addWidget(self.scrollBox)
 
     def _getMsgList(self, msg):
+        print(callback)
         self.msgList = self.getdataList(msg)
 
     def writeXML(self):

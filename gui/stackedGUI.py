@@ -11,6 +11,8 @@ import gui.addGUI as addGUI
 
 class stackedGUI(QStackedWidget):
 
+    userEdited = Signal(str)
+
     def __init__(self, parent=None):
         QStackedWidget.__init__(self,parent)
         #super(stackedGUI, self).__init__()
@@ -18,7 +20,8 @@ class stackedGUI(QStackedWidget):
         self.setWindowTitle("ArchiveMail")
 
         self.home = homeGUI.homeGUI()
-        self.home.userEdited.connect(self.openRead)
+        #self.home.userEdited.connect(self.openRead)
+        self._connectSignals()
         self.addWidget(self.home)
 
         self.setCurrentWidget(self.home)
@@ -28,17 +31,24 @@ class stackedGUI(QStackedWidget):
         self.addWidget(self.command)
         self.setCurrentWidget(self.command)
 
-    def openLire(self):
-        self.setCurrentWidget(self.read)
+    #def openLire(self):
+    #    self.setCurrentWidget(self.read)
 
     def openAddSite(self):
         self.add = addGUI.addGUI(username=self.username)
         self.addWidget(self.add)
         self.setCurrentWidget(self.add)
 
-    @Slot(str)
-    def openRead(self, username):
-        self.username = username
-        self.read = readGUI.readGUI(username=username)
+    #@Slot(str)
+    def openRead(self):
+        self.read = readGUI.readGUI()
         self.addWidget(self.read)
         self.setCurrentWidget(self.read)
+
+    def _connectSignals(self):
+        self.home.userEdited.connect(self.on_userEdited)
+
+    @Slot(str)
+    def on_userEdited(self, user):
+        self.openRead()
+        self.userEdited.emit(user)

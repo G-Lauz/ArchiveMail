@@ -8,15 +8,12 @@ from PySide2.QtWidgets import (QWidget, QVBoxLayout, QPushButton, QProgressBar,
 from utils.emailreader import GmailReader
 import utils.threadpool as threadpool
 
-class readGUI(QWidget, GmailReader):
+class readGUI(QWidget):
 
-    def __init__(self, username=None, parent=None):
+    def __init__(self, parent=None):
         QWidget.__init__(self,parent)
-        GmailReader.__init__(self,username=username)
 
-        #self.reader = GmailReader(username=username)
-
-        self.updateProgress.connect(self.setProgress)
+        #self.updateProgress.connect(self.setProgress)
 
         self.readButton = QPushButton("Lire")
         self.readButton.clicked.connect(self.read)

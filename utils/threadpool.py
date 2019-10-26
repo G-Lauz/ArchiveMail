@@ -1,7 +1,7 @@
 from functools import wraps
 from PySide2.QtCore import QThread, Signal, Slot
 
-class progressThread(QThread):
+class Thread(QThread):
 
     exception = Signal(Exception)
 
@@ -20,7 +20,7 @@ class progressThread(QThread):
 def threaded(fct):
     @wraps(fct)
     def wrapper(*args, **kwargs):
-        progress = progressThread(fct, *args, **kwargs)
+        progress = Thread(fct, *args, **kwargs)
         fct.__runner = progress
 
         @Slot(Exception)

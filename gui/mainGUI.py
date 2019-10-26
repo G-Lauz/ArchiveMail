@@ -8,6 +8,8 @@ import gui.stackedGUI as stackedGUI
 
 class mainGUI(QMainWindow):
 
+    userEdited = Signal(str)
+
     def __init__(self):
         super(mainGUI, self).__init__()
 
@@ -19,10 +21,11 @@ class mainGUI(QMainWindow):
 
         self.createActions()
         self.createMenus()
+        self._connectSignals()
 
     def createActions(self):
         self.readAct = QAction("&Lire",statusTip="un test",
-            triggered=self.stacked.openLire)
+            triggered=self.stacked.openRead)
         self.exportAct = QAction("&Exporter",statusTip="un test",
             triggered=self.stacked.openCommand)
         self.addAct = QAction("&Ajouter un site", statusTip="un test",
@@ -34,8 +37,8 @@ class mainGUI(QMainWindow):
         self.fileMenu.addAction(self.exportAct)
         self.fileMenu.addAction(self.addAct)
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    mainWin = mainGUI()
-    mainWin.show()
-    sys.exit(app.exec_())
+    def _connectSignals(self):
+        self.stacked.userEdited.connect(self.on_userEdited)
+
+    def on_userEdited(self, user):
+        self.userEdited.emit(user)
