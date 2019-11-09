@@ -58,7 +58,6 @@ class Main(QObject):
         self.reader_thread.start()
 
 if __name__ == "__main__":
-    log.log_info('test test tester')
     app = QApplication(sys.argv)
     main = Main()
     sys.exit(app.exec_())
