@@ -23,10 +23,17 @@ class stackedGUI(QStackedWidget):
 
         self.setWindowTitle("ArchiveMail")
 
+        #Build stacked elements and add it to QStackedWidget
         self.home = homeGUI.homeGUI()
-        #self.home.userEdited.connect(self.openRead)
-        self._connectSignals()
+        self.command = commandGUI.commandGUI()
+        #self.add = addGUI.addGUI(username=self.username)
+        self.read = readGUI.readGUI()
         self.addWidget(self.home)
+        self.addWidget(self.command)
+        #self.addWidget(self.add)
+        self.addWidget(self.read)
+
+        self._connectSignals()
 
         self.setCurrentWidget(self.home)
 
@@ -37,22 +44,12 @@ class stackedGUI(QStackedWidget):
         return str(self.__class__)
 
     def openCommand(self):
-        self.command = commandGUI.commandGUI()
-        self.addWidget(self.command)
         self.setCurrentWidget(self.command)
 
-    #def openLire(self):
-    #    self.setCurrentWidget(self.read)
-
     def openAddSite(self):
-        self.add = addGUI.addGUI(username=self.username)
-        self.addWidget(self.add)
         self.setCurrentWidget(self.add)
 
-    #@Slot(str)
     def openRead(self):
-        self.read = readGUI.readGUI()
-        self.addWidget(self.read)
         self.setCurrentWidget(self.read)
 
     def _connectSignals(self):

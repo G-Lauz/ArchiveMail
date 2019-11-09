@@ -20,6 +20,8 @@ from utils.myxml import xmlManipulator
 import utils.log as log
 
 class GmailReader(QObject):
+    #Define signal
+    sig_readMail = Signal(str)
 
     def __init__(self, username=None, parent=None):
         super(self.__class__, self).__init__(parent)
