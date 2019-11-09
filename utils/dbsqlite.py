@@ -3,6 +3,8 @@ import sqlite3
 from urllib.request import pathname2url
 import datetime as dt
 
+import utils.log as log
+
 class PostulantDB():
     """
     Classe définisant une base de donné de postulant
@@ -39,6 +41,8 @@ class PostulantDB():
 
     #Constructeur de la class
     def __init__(self):
+        log.log_init_object(self)
+
         self._DBFILE = "data/postulantdb.db"
         self._TABLENAME = "POSTULANT"
         self._conn = None
@@ -77,7 +81,11 @@ class PostulantDB():
 
     #Destructeur de la class
     def __del__(self):
+        log.log_del_object(self)
         self.conn.close()
+
+    def __str__(self):
+        return str(self.__class__)
 
     def insert(self, email:str="none", sexe:str="none", prenom:str="none",
         nom:str="none", interet:str="none", site:str="none"):

@@ -6,7 +6,7 @@ from PySide2.QtWidgets import (QWidget, QVBoxLayout, QPushButton, QProgressBar,
     QLabel)
 
 from utils.emailreader import GmailReader
-import utils.threadpool as threadpool
+import utils.log as log
 
 class readGUI(QWidget):
 
@@ -14,6 +14,7 @@ class readGUI(QWidget):
         QWidget.__init__(self,parent)
 
         #self.updateProgress.connect(self.setProgress)
+        log.log_init_object(self)
 
         self.readButton = QPushButton("Lire")
         self.readButton.clicked.connect(self.read)
@@ -36,7 +37,10 @@ class readGUI(QWidget):
         self.setLayout(layout)
 
     def __del__(self):
-        print("Destruction : ", self)
+        log.log_del_object(self)
+
+    def __str__(self):
+        return str(self.__class__)
 
     @Slot(float)
     def setProgress(self, progress):

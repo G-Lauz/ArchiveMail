@@ -6,12 +6,16 @@ from PySide2.QtWidgets import (QApplication, QMainWindow, QWidget, QMenuBar,
 
 import gui.stackedGUI as stackedGUI
 
+import utils.log as log
+
 class mainGUI(QMainWindow):
 
     userEdited = Signal(str)
 
     def __init__(self):
         super(mainGUI, self).__init__()
+
+        log.log_init_object(self)
 
         self.setWindowTitle("ArchiveMail")
         #self.setFixedSize(400,300)
@@ -22,6 +26,12 @@ class mainGUI(QMainWindow):
         self.createActions()
         self.createMenus()
         self._connectSignals()
+
+    def __del__(self):
+        log.log_del_object(self)
+
+    def __str__(self):
+        return str(self.__class__)
 
     def createActions(self):
         self.readAct = QAction("&Lire",statusTip="un test",

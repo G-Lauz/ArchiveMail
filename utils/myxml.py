@@ -1,13 +1,21 @@
 import xml.etree.ElementTree as ET
 
 import utils.appdata as appdata
+import utils.log as log
 
 class xmlManipulator():
 
     def __init__(self, filename : str):
+        log.log_init_object(self)
         self.filename = filename
         tree = ET.parse('data/' + self.filename)
         self.root = tree.getroot()
+
+    def __del__(self):
+        log.log_del_object(self)
+
+    def __str__(self):
+        return str(self.__class__)
 
     def getChildTextbyId(self, id):
         for child in self.root.iter():

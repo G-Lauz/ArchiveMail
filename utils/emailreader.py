@@ -17,6 +17,7 @@ import utils.appdata as appdata
 from utils.appdata import Data
 from utils.dbsqlite import PostulantDB
 from utils.myxml import xmlManipulator
+import utils.log as log
 
 class GmailReader(QObject):
 
@@ -36,10 +37,15 @@ class GmailReader(QObject):
 
         self._db = None
 
+    def __del__(self):
+        log.log_del_object(self)
+
+    def __str__(self):
+        return str(self.__class__)
 
     @Slot()
     def init(self):
-        print("init GmailReader")
+        log.log_init_object(self)
         self.credentials = self._get_authenticated()
         self.mail = self._imap_connection()
 

@@ -9,6 +9,8 @@ import gui.readGUI as readGUI
 import gui.commandGUI as commandGUI
 import gui.addGUI as addGUI
 
+import utils.log as log
+
 class stackedGUI(QStackedWidget):
 
     userEdited = Signal(str)
@@ -16,6 +18,8 @@ class stackedGUI(QStackedWidget):
     def __init__(self, parent=None):
         QStackedWidget.__init__(self,parent)
         #super(stackedGUI, self).__init__()
+
+        log.log_init_object(self)
 
         self.setWindowTitle("ArchiveMail")
 
@@ -25,6 +29,12 @@ class stackedGUI(QStackedWidget):
         self.addWidget(self.home)
 
         self.setCurrentWidget(self.home)
+
+    def __del__(self):
+        log.log_del_object(self)
+
+    def __str__(self):
+        return str(self.__class__)
 
     def openCommand(self):
         self.command = commandGUI.commandGUI()

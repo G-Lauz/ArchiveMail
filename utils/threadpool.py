@@ -1,6 +1,29 @@
 from functools import wraps
 from PySide2.QtCore import QThread, Signal, Slot
 
+import utils.log as log
+
+class CustomThread(QThread):
+    _class_instance = 0
+
+    def __init__(self, parent=None, id=None, name=None):
+        QThread.__init__(self, parent)
+        self.__class__._class_instance += 1
+        self.id = self.__class__._class_instance
+        self.name = name
+        log.log_init_object(self)
+
+    def __del__(self):
+        self.__class__._class_instance -= 1
+        log.log_del_object(self)
+        self.terminate()
+
+    def __repr__(self):
+        return 'utils.threadpool.CustomThread'
+
+    def __str__(self):
+        return str(self.__class__)
+
 class Thread(QThread):
 
     exception = Signal(Exception)

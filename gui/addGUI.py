@@ -5,10 +5,13 @@ from PySide2.QtWidgets import (QWidget, QPushButton, QLabel, QVBoxLayout,
     QHBoxLayout, QMessageBox, QComboBox, QLineEdit, QScrollArea)
 
 from utils.emailreader import GmailReader
+import utils.log as log
 
 class ScrollQLabel(QWidget):
     def __init__(self, *args, **kwargs):
         QWidget.__init__(self, *args, **kwargs)
+
+        log.log_init_object(self)
 
         self.content = QWidget()
         self.lay = QVBoxLayout(self.content)
@@ -24,6 +27,12 @@ class ScrollQLabel(QWidget):
         #self.layout().addWidget(scroll, 0,0,1, self.layout().columnCount())
         self.setStyleSheet("QScrollArea{min-width:300 px; min-height: 400px}")
 
+    def __del__(self):
+        log.log_del_object(self)
+
+    def __str__(self):
+        return str(self.__class__)
+
     def setList(self, list):
         for i, item in enumerate(list):
             self.lay.insertWidget(self.lay.count() - 1, QLabel(str(i) + " ..... "+ item))
@@ -34,9 +43,14 @@ class addGUI(QWidget, GmailReader):
         QWidget.__init__(self,parent)
         GmailReader.__init__(self,username=username)
 
+        log_init_object(self)
+
         self.msgList = []
 
         self.initUI()
+
+    def __del__(self):
+        log_del_object(self)
 
     def initUI(self):
         # Layout principal
