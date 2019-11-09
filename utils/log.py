@@ -54,9 +54,10 @@ def log_del_object(object):
     log_thread(msg)
 
 def log_start_method(object, method):
-    msg = Colors.fg.lightcyan +
-          'Start %s from %s ...' % (method.__name__, type(object).__name__) +
-          Colors.reset
+    msg = (Colors.fg.lightcyan +
+           'Start ' + method.__name__ + ' from ' + type(object).__name__ +
+           ' ...' +
+           Colors.reset)
 
 def log_info(message : str):
     msg = Colors.fg.lightgreen + message + Colors.reset
