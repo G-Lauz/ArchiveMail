@@ -64,4 +64,4 @@ class mainGUI(QMainWindow):
 
     def on_updateProgress(self, progress):
         log.log_start_method(self, self.on_updateProgress)
-        self.updateProgress.emit(progress)
+        self.stacked.updateProgress.emit(progress)

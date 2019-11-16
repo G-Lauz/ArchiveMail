@@ -8,10 +8,10 @@ class CustomThread(QThread):
 
     def __init__(self, parent=None, name=None):
         QThread.__init__(self, parent)
+        log.log_init_object(self)
         self.__class__._class_instance += 1
         self.id = self.__class__._class_instance
         self.name = name
-        log.log_init_object(self)
 
     def __del__(self):
         self.__class__._class_instance -= 1
@@ -38,7 +38,7 @@ class Thread(QThread):
     def run(self):
         log.log_start_method(self,self.run)
         try:
-            self._fct(*self._args, **self._kwargs)            
+            self._fct(*self._args, **self._kwargs)
         except Exception as e:
             self.exception.emit(e)
 

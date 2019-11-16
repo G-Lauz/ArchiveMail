@@ -52,12 +52,11 @@ class Main(QObject):
         self.reader_thread = CustomThread(name='reader_thread')
 
         self.reader.moveToThread(self.reader_thread)
+        self.reader_thread.start()
 
         # Connect reader Signal to the thread Slot
         self.reader_thread.started.connect(self.reader.init)
         self.reader.updateProgress.connect(self.on_updateProgress)
-
-        self.reader_thread.start()
 
     def on_sig_readMail(self, select=None, critere=None):
         log.log_start_method(self, self.on_sig_readMail)
@@ -65,7 +64,7 @@ class Main(QObject):
 
     def on_updateProgress(self, progress):
         log.log_start_method(self, self.on_updateProgress)
-        self.mainGUI.updateProgress(progress)
+        self.mainGUI.updateProgress.emit(progress)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

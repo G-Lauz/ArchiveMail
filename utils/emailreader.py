@@ -22,7 +22,8 @@ import utils.log as log
 class GmailReader(QObject):
     #Define signal
     sig_readMail = Signal(str, str)
-    _updateProgress = Signal(float)
+    updateProgress = Signal(float)
+    #_updateProgress = Signal(float)
 
     def __init__(self, username=None, parent=None):
         super(self.__class__, self).__init__(parent)
@@ -100,13 +101,11 @@ class GmailReader(QObject):
     def readMail(self, select="INBOX", critere="ALL", callback=None):
         log.log_start_method(self, self.readMail)
 
-        log.log_info('select: %s\n %-15s critere: %s' % (select,'', critere))
         rv, data = self.mail.select(select)
-        log.log_info('rv : ' + rv)
+
         if rv == 'OK':
             rv, data = self.mail.search("utf-8", critere)
             if rv != 'OK':
-                log.log_info('Aucun message')
                 raise Exception("Auncun message")
 
             dataLen = len(data[0].split())
@@ -129,7 +128,7 @@ class GmailReader(QObject):
                 else:
                     self._storedata(self._getdata(msg))
                     #self._getdata(msg)
-                    print('\n')
+
                     #for i in self._structure(msg):
                     #    print(i)
 
@@ -196,10 +195,8 @@ class GmailReader(QObject):
                 message = self._readType(list(msg.walk())[3])
                 listLine = message.splitlines()
             else:
-                print("return")
                 return None
         else:
-            print("return 1")
             return None
 
         #for i, item in enumerate(listLine):
@@ -223,13 +220,11 @@ class GmailReader(QObject):
                 message = self._readType(list(msg.walk())[3])
                 listLine = message.splitlines()
             else:
-                print("return")
                 return None
 
             return listLine
 
         else:
-            print("return")
             return None
 
     def _storedata(self, adict : dict):
@@ -308,8 +303,8 @@ class GmailReader(QObject):
     def _get_user(self):
         return self._user
 
-    def _get_updateProgress(self):
-        return self._updateProgress
+    #def _get_updateProgress(self):
+    #    return self._updateProgress
 
     #===========================================================================
     # set
@@ -326,8 +321,8 @@ class GmailReader(QObject):
     def _set_user(self, user):
         self._user = user
 
-    def _set_updateProgress(self, signal):
-        self._updateProgress = signal
+    #def _set_updateProgress(self, signal):
+    #    self._updateProgress = signal
 
     #===========================================================================
     # Propriété
@@ -341,7 +336,7 @@ class GmailReader(QObject):
     credentials = property(fget=_get_credentials, fset=_set_credentials)
     mail = property(fget=_get_mail, fset=_set_mail)
     user = property(fget=_get_user, fset=_set_user)
-    updateProgress = property(fget=_get_updateProgress,fset=_set_updateProgress)
+    #updateProgress = property(fget=_get_updateProgress,fset=_set_updateProgress)
 
 if __name__ == "__main__":
     er = GmailReader(input("Username: "))
