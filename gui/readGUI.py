@@ -10,6 +10,7 @@ import utils.log as log
 
 class readGUI(QWidget):
     sig_readMail = Signal(str)
+    updateProgress = Signal(float)
 
     def __init__(self, parent=None):
         QWidget.__init__(self,parent)
@@ -37,14 +38,20 @@ class readGUI(QWidget):
         layout.addWidget(self.detailText)
         self.setLayout(layout)
 
+        self._connectSignals()
+
     def __del__(self):
         log.log_del_object(self)
 
     def __str__(self):
         return str(self.__class__)
 
+    def _connectSignals(self):
+        self.updateProgress.connect(self.setProgress)
+
     @Slot(float)
     def setProgress(self, progress):
+        log.log_start_method(self, self.setProgress)
         self.progressBar.setValue(progress)
 
     @Slot(Exception)
@@ -52,7 +59,8 @@ class readGUI(QWidget):
         self.detailText.setText(e)
 
     def read(self):
-        self.sig_readMail.emit(critere='UNSEEN')
+        log.log_start_method(self, self.read)
+        self.sig_readMail.emit('UNSEEN')
         self.detailText.setText("Lecture...")
 
         def exception_hook(type, value, tb):

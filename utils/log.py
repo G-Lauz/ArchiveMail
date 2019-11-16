@@ -45,6 +45,7 @@ def log_thread(msg:str):
         except AttributeError as err:
             print('%-15s: %s' % ('main-thread', msg))
 
+
 def log_init_object(object):
     msg = 'Init ' + str(object) + ' ...'
     log_thread(msg)
@@ -58,6 +59,7 @@ def log_start_method(object, method):
            'Start ' + method.__name__ + ' from ' + type(object).__name__ +
            ' ...' +
            Colors.reset)
+    log_thread(msg)
 
 def log_info(message : str):
     msg = Colors.fg.lightgreen + message + Colors.reset

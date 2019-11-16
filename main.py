@@ -36,6 +36,7 @@ class Main(QObject):
     #Make the different signal's conenctions
     def _connectSignals(self):
         self.mainGUI.userEdited.connect(self.start)
+        self.mainGUI.sig_readMail.connect(self.on_sig_readMail)
 
     #Init the program
     @Slot(str)
@@ -54,8 +55,17 @@ class Main(QObject):
 
         # Connect reader Signal to the thread Slot
         self.reader_thread.started.connect(self.reader.init)
+        self.reader.updateProgress.connect(self.on_updateProgress)
 
         self.reader_thread.start()
+
+    def on_sig_readMail(self, critere=None):
+        log.log_start_method(self, self.on_sig_readMail)
+        self.reader.sig_readMail.emit(critere)
+
+    def on_updateProgress(self, progress):
+        log.log_start_method(self, self.on_updateProgress)
+        self.mainGUI.updateProgress(progress)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

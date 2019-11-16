@@ -22,6 +22,7 @@ import utils.log as log
 class GmailReader(QObject):
     #Define signal
     sig_readMail = Signal(str)
+    _updateProgress = Signal(float)
 
     def __init__(self, username=None, parent=None):
         super(self.__class__, self).__init__(parent)
@@ -52,6 +53,9 @@ class GmailReader(QObject):
         self.mail = self._imap_connection()
 
         self._updateProgress = Signal(float)
+        self.finished_readMail = Signal()
+
+        self.sig_readMail.connect(self.readMail)
 
         self._initNameList()
 
@@ -94,14 +98,20 @@ class GmailReader(QObject):
 
     @threaded
     def readMail(self, select="INBOX", critere="ALL", callback=None):
+        log.log_start_method(self, self.readMail)
+
+        log.log_info('select: %s\n %-15s critere: %s' % (select,'', critere))
         rv, data = self.mail.select(select)
+        log.log_info('rv : ' + rv)
         if rv == 'OK':
             rv, data = self.mail.search("utf-8", critere)
             if rv != 'OK':
+                log.log_info('Aucun message')
                 raise Exception("Auncun message")
 
             dataLen = len(data[0].split())
             if dataLen == 0:
+                log.log_info('Aucun message')
                 raise Exception("Auncun message")
 
             for i,index in enumerate(data[0].split()):
@@ -109,6 +119,7 @@ class GmailReader(QObject):
 
                 rv, data = self.mail.fetch(index, "(RFC822)")
                 if rv != 'OK':
+                    log.log_info("Erreur en lisant le message {}".format(index))
                     raise Exception("Erreur en lisant le message {}".format(index))
 
                 msg = email.message_from_bytes(data[0][1]) #MESSAGE

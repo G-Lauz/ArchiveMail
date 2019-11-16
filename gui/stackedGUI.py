@@ -14,6 +14,8 @@ import utils.log as log
 class stackedGUI(QStackedWidget):
 
     userEdited = Signal(str)
+    sig_readMail = Signal(str)
+    updateProgress = Signal(float)
 
     def __init__(self, parent=None):
         QStackedWidget.__init__(self,parent)
@@ -49,13 +51,19 @@ class stackedGUI(QStackedWidget):
     def openAddSite(self):
         self.setCurrentWidget(self.add)
 
-    def openRead(self):
+    def openRead(self, user):
+        self.userEdited.emit(user)
         self.setCurrentWidget(self.read)
 
     def _connectSignals(self):
-        self.home.userEdited.connect(self.on_userEdited)
+        self.home.userEdited.connect(self.openRead)
+        self.read.sig_readMail.connect(self.on_sig_readMail)
+        self.updateProgress.connect(self.on_updateProgress)
 
-    @Slot(str)
-    def on_userEdited(self, user):
-        self.openRead()
-        self.userEdited.emit(user)
+    def on_sig_readMail(self, critere=None):
+        log.log_start_method(self, self.on_sig_readMail)
+        self.sig_readMail.emit(critere)
+
+    def on_updateProgress(self, progress):
+        log.log_start_method(self, self.on_updateProgress)
+        self.updateProgress.emit(progress)

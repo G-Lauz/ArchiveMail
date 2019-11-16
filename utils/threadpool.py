@@ -6,7 +6,7 @@ import utils.log as log
 class CustomThread(QThread):
     _class_instance = 0
 
-    def __init__(self, parent=None, id=None, name=None):
+    def __init__(self, parent=None, name=None):
         QThread.__init__(self, parent)
         self.__class__._class_instance += 1
         self.id = self.__class__._class_instance
@@ -33,10 +33,12 @@ class Thread(QThread):
         self._fct = fct
         self._args = args
         self._kwargs = kwargs
+        self.name = 'threaded'
 
     def run(self):
+        log.log_start_method(self,self.run)
         try:
-            self._fct(*self._args, **self._kwargs)
+            self._fct(*self._args, **self._kwargs)            
         except Exception as e:
             self.exception.emit(e)
 

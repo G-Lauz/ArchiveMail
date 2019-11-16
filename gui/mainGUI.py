@@ -9,8 +9,10 @@ import gui.stackedGUI as stackedGUI
 import utils.log as log
 
 class mainGUI(QMainWindow):
-
+    #Define signal
     userEdited = Signal(str)
+    sig_readMail = Signal(str)
+    updateProgress = Signal(float)
 
     def __init__(self):
         super(mainGUI, self).__init__()
@@ -49,6 +51,17 @@ class mainGUI(QMainWindow):
 
     def _connectSignals(self):
         self.stacked.userEdited.connect(self.on_userEdited)
+        self.stacked.sig_readMail.connect(self.on_sig_readMail)
+
+        self.updateProgress.connect(self.on_updateProgress)
 
     def on_userEdited(self, user):
         self.userEdited.emit(user)
+
+    def on_sig_readMail(self, critere=None):
+        log.log_start_method(self, self.on_sig_readMail)
+        self.sig_readMail.emit(critere)
+
+    def on_updateProgress(self, progress):
+        log.log_start_method(self, self.on_updateProgress)
+        self.updateProgress.emit(progress)
