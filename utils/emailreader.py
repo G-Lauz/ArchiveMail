@@ -17,10 +17,17 @@ import utils.appdata as appdata
 from utils.appdata import Data
 from utils.dbsqlite import PostulantDB
 from utils.myxml import xmlManipulator
+import utils.log as log
 
-class GmailReader():
+class GmailReader(QObject):
+    #Define signal
+    sig_readMail = Signal(str, str)
+    updateProgress = Signal(float)
+    #_updateProgress = Signal(float)
 
-    def __init__(self, username=None):
+    def __init__(self, username=None, parent=None):
+        super(self.__class__, self).__init__(parent)
+
         self._SCOPES = ["https://mail.google.com/"]
         self._CLIENT_SECRET = "secret/client_secret.json"
         self._API_SERVICE_NAME = "gmail"
@@ -34,10 +41,22 @@ class GmailReader():
 
         self._db = None
 
+    def __del__(self):
+        log.log_del_object(self)
+
+    def __str__(self):
+        return str(self.__class__)
+
+    @Slot()
+    def init(self):
+        log.log_init_object(self)
         self.credentials = self._get_authenticated()
         self.mail = self._imap_connection()
 
         self._updateProgress = Signal(float)
+        self.finished_readMail = Signal()
+
+        self.sig_readMail.connect(self.readMail)
 
         self._initNameList()
 
@@ -80,7 +99,43 @@ class GmailReader():
 
     @threaded
     def readMail(self, select="INBOX", critere="ALL", callback=None):
+        log.log_start_method(self, self.readMail)
+
         rv, data = self.mail.select(select)
+
+        if rv == 'OK':
+            rv, data = self.mail.search("utf-8", critere)
+            if rv != 'OK':
+                raise Exception("Auncun message")
+
+            dataLen = len(data[0].split())
+            if dataLen == 0:
+                log.log_info('Aucun message')
+                raise Exception("Auncun message")
+
+            for i,index in enumerate(data[0].split()):
+                self.updateProgress.emit(((i+1)/dataLen)*100)
+
+                rv, data = self.mail.fetch(index, "(RFC822)")
+                if rv != 'OK':
+                    log.log_info("Erreur en lisant le message {}".format(index))
+                    raise Exception("Erreur en lisant le message {}".format(index))
+
+                msg = email.message_from_bytes(data[0][1]) #MESSAGE
+
+                if callback:
+                    callback(msg);
+                else:
+                    self._storedata(self._getdata(msg))
+                    #self._getdata(msg)
+
+                    #for i in self._structure(msg):
+                    #    print(i)
+
+    def getMailsList(self, select="INBOX", critere="UNSEEN", callback=None):
+        alist = []
+        rv, data = self.mail.select(select)
+
         if rv == 'OK':
             rv, data = self.mail.search("utf-8", critere)
             if rv != 'OK':
@@ -91,22 +146,16 @@ class GmailReader():
                 raise Exception("Auncun message")
 
             for i,index in enumerate(data[0].split()):
-                self.updateProgress.emit(((i+1)/dataLen)*100)
-
                 rv, data = self.mail.fetch(index, "(RFC822)")
                 if rv != 'OK':
                     raise Exception("Erreur en lisant le message {}".format(index))
 
                 msg = email.message_from_bytes(data[0][1]) #MESSAGE
 
-                if callback:
-                    callback(msg);
-                else:
-                    self._storedata(self._getdata(msg))
-                    #self._getdata(msg)
-                    print('\n\n')
-                    #for i in self._structure(msg):
-                    #    print(i)
+                subject = u"".join(msg['subject'])
+                alist.append(subject)
+
+        return alist
 
     def _html2string(self, payload):
         soup = bs(payload, "html.parser")
@@ -146,11 +195,12 @@ class GmailReader():
                 message = self._readType(list(msg.walk())[3])
                 listLine = message.splitlines()
             else:
-                print("return")
                 return None
+        else:
+            return None
 
-        for i, item in enumerate(listLine):
-            print(str(i) + " ..... " + item)
+        #for i, item in enumerate(listLine):
+        #    print(str(i) + " ..... " + item)
 
         for id in self.sites.getChildId(self.sites.root):
             childs = self.sites.getChildTextbyId(id)
@@ -170,10 +220,12 @@ class GmailReader():
                 message = self._readType(list(msg.walk())[3])
                 listLine = message.splitlines()
             else:
-                print("return")
                 return None
 
             return listLine
+
+        else:
+            return None
 
     def _storedata(self, adict : dict):
         if adict == None:
@@ -251,8 +303,8 @@ class GmailReader():
     def _get_user(self):
         return self._user
 
-    def _get_updateProgress(self):
-        return self._updateProgress
+    #def _get_updateProgress(self):
+    #    return self._updateProgress
 
     #===========================================================================
     # set
@@ -269,8 +321,8 @@ class GmailReader():
     def _set_user(self, user):
         self._user = user
 
-    def _set_updateProgress(self, signal):
-        self._updateProgress = signal
+    #def _set_updateProgress(self, signal):
+    #    self._updateProgress = signal
 
     #===========================================================================
     # Propriété
@@ -284,7 +336,7 @@ class GmailReader():
     credentials = property(fget=_get_credentials, fset=_set_credentials)
     mail = property(fget=_get_mail, fset=_set_mail)
     user = property(fget=_get_user, fset=_set_user)
-    updateProgress = property(fget=_get_updateProgress,fset=_set_updateProgress)
+    #updateProgress = property(fget=_get_updateProgress,fset=_set_updateProgress)
 
 if __name__ == "__main__":
     er = GmailReader(input("Username: "))

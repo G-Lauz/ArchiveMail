@@ -2,13 +2,16 @@ import sys
 from PySide2 import QtWidgets, QtGui, QtCore
 from PySide2.QtCore import QObject, Signal, Slot
 from PySide2.QtWidgets import (QWidget, QPushButton, QLabel, QVBoxLayout,
-    QHBoxLayout, QMessageBox, QLineEdit, QScrollArea)
+    QHBoxLayout, QMessageBox, QComboBox, QLineEdit, QScrollArea)
 
 from utils.emailreader import GmailReader
+import utils.log as log
 
 class ScrollQLabel(QWidget):
     def __init__(self, *args, **kwargs):
         QWidget.__init__(self, *args, **kwargs)
+
+        log.log_init_object(self)
 
         self.content = QWidget()
         self.lay = QVBoxLayout(self.content)
@@ -24,6 +27,12 @@ class ScrollQLabel(QWidget):
         #self.layout().addWidget(scroll, 0,0,1, self.layout().columnCount())
         self.setStyleSheet("QScrollArea{min-width:300 px; min-height: 400px}")
 
+    def __del__(self):
+        log.log_del_object(self)
+
+    def __str__(self):
+        return str(self.__class__)
+
     def setList(self, list):
         for i, item in enumerate(list):
             self.lay.insertWidget(self.lay.count() - 1, QLabel(str(i) + " ..... "+ item))
@@ -34,9 +43,14 @@ class addGUI(QWidget, GmailReader):
         QWidget.__init__(self,parent)
         GmailReader.__init__(self,username=username)
 
+        log_init_object(self)
+
         self.msgList = []
 
         self.initUI()
+
+    def __del__(self):
+        log_del_object(self)
 
     def initUI(self):
         # Layout principal
@@ -46,8 +60,14 @@ class addGUI(QWidget, GmailReader):
         self.searchLayout = QHBoxLayout()
         self.searchText = QLabel("Exemple de courriel à ouvrir:")
         self.searchLayout.addWidget(self.searchText)
-        self.searchBar = QLineEdit("Objet")
-        self.searchLayout.addWidget(self.searchBar)
+
+        self.mailsComboBox = QComboBox()
+        for i in self.getMailsList():
+            self.mailsComboBox.addItem(i)
+        self.searchLayout.addWidget(self.mailsComboBox)
+        #self.searchBar = QLineEdit("Objet")
+        #self.searchLayout.addWidget(self.searchBar)
+
         self.openButton = QPushButton("Ouvrir")
         self.openButton.clicked.connect(self.openMail)
         self.searchLayout.addWidget(self.openButton)
@@ -112,12 +132,15 @@ class addGUI(QWidget, GmailReader):
 
     def openMail(self):
         msgList = ["Hello", "World", "Gabriel", "Lauzier", "Hockey"]
-        critere = '(SUBJECT "%s")' % self.searchBar.text().encode("utf-8")
+        critere = b'(SUBJECT "%s")' % self.mailsComboBox.currentText().encode('utf-8')
+        print(type(critere))
         self.readMail._original(self, critere=critere, callback=self._getMsgList)
         self.scrollBox.setList(self.msgList)
-        #self.selectionLayout.addWidget(self.scrollBox)
+
+        self.selectionLayout.addWidget(self.scrollBox)
 
     def _getMsgList(self, msg):
+        print(callback)
         self.msgList = self.getdataList(msg)
 
     def writeXML(self):

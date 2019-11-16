@@ -6,17 +6,17 @@ from PySide2.QtWidgets import (QWidget, QVBoxLayout, QPushButton, QProgressBar,
     QLabel)
 
 from utils.emailreader import GmailReader
-import utils.threadpool as threadpool
+import utils.log as log
 
-class readGUI(QWidget, GmailReader):
+class readGUI(QWidget):
+    sig_readMail = Signal(str, str)
+    updateProgress = Signal(float)
 
-    def __init__(self, username=None, parent=None):
+    def __init__(self, parent=None):
         QWidget.__init__(self,parent)
-        GmailReader.__init__(self,username=username)
 
-        #self.reader = GmailReader(username=username)
-
-        self.updateProgress.connect(self.setProgress)
+        #self.updateProgress.connect(self.setProgress)
+        log.log_init_object(self)
 
         self.readButton = QPushButton("Lire")
         self.readButton.clicked.connect(self.read)
@@ -38,11 +38,20 @@ class readGUI(QWidget, GmailReader):
         layout.addWidget(self.detailText)
         self.setLayout(layout)
 
+        self._connectSignals()
+
     def __del__(self):
-        print("Destruction : ", self)
+        log.log_del_object(self)
+
+    def __str__(self):
+        return str(self.__class__)
+
+    def _connectSignals(self):
+        self.updateProgress.connect(self.setProgress)
 
     @Slot(float)
     def setProgress(self, progress):
+        log.log_start_method(self, self.setProgress)
         self.progressBar.setValue(progress)
 
     @Slot(Exception)
@@ -50,7 +59,8 @@ class readGUI(QWidget, GmailReader):
         self.detailText.setText(e)
 
     def read(self):
-        self.readMail(critere="UNSEEN")
+        log.log_start_method(self, self.read)
+        self.sig_readMail.emit('INBOX','UNSEEN')
         self.detailText.setText("Lecture...")
 
         def exception_hook(type, value, tb):

@@ -7,16 +7,25 @@ from PySide2.QtWidgets import (QWidget, QGridLayout, QComboBox, QPushButton,
 from utils.mycsv import csvManipulator
 from utils.dbsqlite import PostulantDB
 from utils.appdata import Data
+import utils.log as log
 
 class commandGUI(QWidget):
 
     def __init__(self, parent=None):
         QWidget.__init__(self,parent)
 
+        log.log_init_object(self)
+
         self._db = PostulantDB()
         self._csv = None
 
         self.initUI()
+
+    def __del__(self):
+        log.log_del_object(self)
+
+    def __str__(self):
+        return str(self.__class__)
 
     def initUI(self):
         self.checkboxLayout = QVBoxLayout()

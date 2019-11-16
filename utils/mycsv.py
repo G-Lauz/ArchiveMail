@@ -1,10 +1,18 @@
 import csv
 
+import utils.log as log
+
 class csvManipulator():
 
     def __init__(self, filename : str):
-
+        log.log_init_object(self)
         self.filename = filename
+
+    def __del__(self):
+        log.log_del_object(self)
+
+    def __str__(self):
+        return str(self.__class__)
 
     def write(self, items):
         with open(self.filename, 'w', newline='') as csvfile:
