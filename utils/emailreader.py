@@ -21,7 +21,7 @@ import utils.log as log
 
 class GmailReader(QObject):
     #Define signal
-    sig_readMail = Signal(str)
+    sig_readMail = Signal(str, str)
     _updateProgress = Signal(float)
 
     def __init__(self, username=None, parent=None):
@@ -129,7 +129,7 @@ class GmailReader(QObject):
                 else:
                     self._storedata(self._getdata(msg))
                     #self._getdata(msg)
-                    print('\n\n')
+                    print('\n')
                     #for i in self._structure(msg):
                     #    print(i)
 
@@ -198,9 +198,12 @@ class GmailReader(QObject):
             else:
                 print("return")
                 return None
+        else:
+            print("return 1")
+            return None
 
-        for i, item in enumerate(listLine):
-            print(str(i) + " ..... " + item)
+        #for i, item in enumerate(listLine):
+        #    print(str(i) + " ..... " + item)
 
         for id in self.sites.getChildId(self.sites.root):
             childs = self.sites.getChildTextbyId(id)
@@ -224,6 +227,10 @@ class GmailReader(QObject):
                 return None
 
             return listLine
+
+        else:
+            print("return")
+            return None
 
     def _storedata(self, adict : dict):
         if adict == None:

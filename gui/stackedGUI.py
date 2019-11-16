@@ -14,7 +14,7 @@ import utils.log as log
 class stackedGUI(QStackedWidget):
 
     userEdited = Signal(str)
-    sig_readMail = Signal(str)
+    sig_readMail = Signal(str, str)
     updateProgress = Signal(float)
 
     def __init__(self, parent=None):
@@ -60,9 +60,9 @@ class stackedGUI(QStackedWidget):
         self.read.sig_readMail.connect(self.on_sig_readMail)
         self.updateProgress.connect(self.on_updateProgress)
 
-    def on_sig_readMail(self, critere=None):
+    def on_sig_readMail(self, select=None, critere=None):
         log.log_start_method(self, self.on_sig_readMail)
-        self.sig_readMail.emit(critere)
+        self.sig_readMail.emit(select, critere)
 
     def on_updateProgress(self, progress):
         log.log_start_method(self, self.on_updateProgress)

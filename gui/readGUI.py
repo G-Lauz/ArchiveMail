@@ -9,7 +9,7 @@ from utils.emailreader import GmailReader
 import utils.log as log
 
 class readGUI(QWidget):
-    sig_readMail = Signal(str)
+    sig_readMail = Signal(str, str)
     updateProgress = Signal(float)
 
     def __init__(self, parent=None):
@@ -60,7 +60,7 @@ class readGUI(QWidget):
 
     def read(self):
         log.log_start_method(self, self.read)
-        self.sig_readMail.emit('UNSEEN')
+        self.sig_readMail.emit('INBOX','UNSEEN')
         self.detailText.setText("Lecture...")
 
         def exception_hook(type, value, tb):

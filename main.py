@@ -59,9 +59,9 @@ class Main(QObject):
 
         self.reader_thread.start()
 
-    def on_sig_readMail(self, critere=None):
+    def on_sig_readMail(self, select=None, critere=None):
         log.log_start_method(self, self.on_sig_readMail)
-        self.reader.sig_readMail.emit(critere)
+        self.reader.sig_readMail.emit(select, critere)
 
     def on_updateProgress(self, progress):
         log.log_start_method(self, self.on_updateProgress)
