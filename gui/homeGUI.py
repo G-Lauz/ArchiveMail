@@ -31,6 +31,7 @@ class homeGUI(QWidget):
         return str(self.__class__)
 
     def openRead(self):
+        log.log_start_method(self, self.openRead)
         user = self.userEdit.text()
         self.userEdited.emit(user)
 

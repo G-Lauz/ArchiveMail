@@ -41,6 +41,7 @@ class Main(QObject):
     #Init the program
     @Slot(str)
     def start(self, user):
+        log.log_start_method(self, self.start)
         #Create a new thread
         self.createThread(user)
 

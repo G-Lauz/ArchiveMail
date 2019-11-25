@@ -34,6 +34,7 @@ class Thread(QThread):
         self._args = args
         self._kwargs = kwargs
         self.name = 'threaded'
+        log.log_init_object(self)
 
     def run(self):
         log.log_start_method(self,self.run)

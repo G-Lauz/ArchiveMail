@@ -28,11 +28,11 @@ class stackedGUI(QStackedWidget):
         #Build stacked elements and add it to QStackedWidget
         self.home = homeGUI.homeGUI()
         self.command = commandGUI.commandGUI()
-        #self.add = addGUI.addGUI(username=self.username)
+        self.add = addGUI.addGUI()
         self.read = readGUI.readGUI()
         self.addWidget(self.home)
         self.addWidget(self.command)
-        #self.addWidget(self.add)
+        self.addWidget(self.add)
         self.addWidget(self.read)
 
         self._connectSignals()
@@ -52,6 +52,7 @@ class stackedGUI(QStackedWidget):
         self.setCurrentWidget(self.add)
 
     def openRead(self, user):
+        log.log_start_method(self, self.openRead)
         self.userEdited.emit(user)
         self.setCurrentWidget(self.read)
 
