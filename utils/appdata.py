@@ -104,3 +104,8 @@ class Bunch(dict):
     def __init__(self, **kwargs):
         dict.__init__(self, kwargs)
         self.__dict__ = self
+
+class Array(list):
+    def __init__(self, **kwargs):
+        list.__init__(self, kwargs)
+        self.__list__ = self

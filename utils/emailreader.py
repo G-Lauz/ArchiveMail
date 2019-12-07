@@ -22,6 +22,8 @@ import utils.log as log
 class GmailReader(QObject):
     #Define signal
     sig_readMail = Signal(str, str)
+    sig_getMsgList = Signal()
+    sig_receivedMsgList = Signal(appdata.Array)
     updateProgress = Signal(float)
     #_updateProgress = Signal(float)
 
@@ -57,6 +59,7 @@ class GmailReader(QObject):
         self.finished_readMail = Signal()
 
         self.sig_readMail.connect(self.readMail)
+        self.sig_getMsgList.connect(self.getMailsList)
 
         self._initNameList()
 
@@ -153,9 +156,11 @@ class GmailReader(QObject):
                 msg = email.message_from_bytes(data[0][1]) #MESSAGE
 
                 subject = u"".join(msg['subject'])
+                log.log_start_method(subject)
                 alist.append(subject)
 
-        return alist
+        self.sig_receivedMsgList.emit(alist)
+        #return alist
 
     def _html2string(self, payload):
         soup = bs(payload, "html.parser")

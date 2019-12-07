@@ -37,6 +37,7 @@ class Main(QObject):
     def _connectSignals(self):
         self.mainGUI.userEdited.connect(self.start)
         self.mainGUI.sig_readMail.connect(self.on_sig_readMail)
+        self.mainGUI.sig_getMsgList.connect(self.on_getMsgList)
 
     #Init the program
     @Slot(str)
@@ -58,6 +59,7 @@ class Main(QObject):
         # Connect reader Signal to the thread Slot
         self.reader_thread.started.connect(self.reader.init)
         self.reader.updateProgress.connect(self.on_updateProgress)
+        self.reader.sig_receivedMsgList.connect(self.on_receivedMsgList)
 
     def on_sig_readMail(self, select=None, critere=None):
         log.log_start_method(self, self.on_sig_readMail)
@@ -66,6 +68,14 @@ class Main(QObject):
     def on_updateProgress(self, progress):
         log.log_start_method(self, self.on_updateProgress)
         self.mainGUI.updateProgress.emit(progress)
+
+    def on_getMsgList(self):
+        log.log_start_method(self, self.on_getMsgList)
+        self.reader.sig_getMsgList.emit()
+
+    def on_receivedMsgList(self, alist):
+        log.log_start_method(self, self.on_receivedMsgList)
+        self.mainGUI.sig_receivedMsgList.emit(alist)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
