@@ -56,6 +56,7 @@ class mainGUI(QMainWindow):
         self.updateProgress.connect(self.on_updateProgress)
 
     def on_userEdited(self, user):
+        log.log_start_method(self, self.on_userEdited)
         self.userEdited.emit(user)
 
     def on_sig_readMail(self, select=None, critere=None):

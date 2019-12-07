@@ -37,20 +37,19 @@ class ScrollQLabel(QWidget):
         for i, item in enumerate(list):
             self.lay.insertWidget(self.lay.count() - 1, QLabel(str(i) + " ..... "+ item))
 
-class addGUI(QWidget, GmailReader):
+class addGUI(QWidget):
 
-    def __init__(self, username=None, parent=None):
+    def __init__(self, parent=None):
         QWidget.__init__(self,parent)
-        GmailReader.__init__(self,username=username)
 
-        log_init_object(self)
+        log.log_init_object(self)
 
         self.msgList = []
 
         self.initUI()
 
     def __del__(self):
-        log_del_object(self)
+        log.log_del_object(self)
 
     def initUI(self):
         # Layout principal
