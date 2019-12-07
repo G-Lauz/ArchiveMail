@@ -7,12 +7,15 @@ from PySide2.QtWidgets import (QApplication, QMainWindow, QWidget, QMenuBar,
 import gui.stackedGUI as stackedGUI
 
 import utils.log as log
+import utils.appdata as appdata
 
 class mainGUI(QMainWindow):
     #Define signal
     userEdited = Signal(str)
     sig_readMail = Signal(str, str)
     updateProgress = Signal(float)
+    sig_getMsgList = Signal()
+    sig_receivedMsgList = Signal(appdata.Array)
 
     def __init__(self):
         super(mainGUI, self).__init__()
@@ -52,7 +55,9 @@ class mainGUI(QMainWindow):
     def _connectSignals(self):
         self.stacked.userEdited.connect(self.on_userEdited)
         self.stacked.sig_readMail.connect(self.on_sig_readMail)
+        self.stacked.sig_getMsgList.connect(self.on_getMsgList)
 
+        self.sig_receivedMsgList.connect(self.on_receivedMsgList)
         self.updateProgress.connect(self.on_updateProgress)
 
     def on_userEdited(self, user):
@@ -66,3 +71,11 @@ class mainGUI(QMainWindow):
     def on_updateProgress(self, progress):
         log.log_start_method(self, self.on_updateProgress)
         self.stacked.updateProgress.emit(progress)
+
+    def on_getMsgList(self):
+        log.log_start_method(self, self.on_getMsgList)
+        self.sig_getMsgList.emit()
+
+    def on_receivedMsgList(self, alist):
+        log.log_start_method(self, self.on_receivedMsgList)
+        self.stacked.sig_receivedMsgList.emit(alist)

@@ -22,6 +22,8 @@ import utils.log as log
 class GmailReader(QObject):
     #Define signal
     sig_readMail = Signal(str, str)
+    sig_getMsgList = Signal()
+    sig_receivedMsgList = Signal(appdata.Array)
     updateProgress = Signal(float)
     #_updateProgress = Signal(float)
 
@@ -57,6 +59,7 @@ class GmailReader(QObject):
         self.finished_readMail = Signal()
 
         self.sig_readMail.connect(self.readMail)
+        self.sig_getMsgList.connect(self.getMailsList)
 
         self._initNameList()
 
@@ -132,30 +135,38 @@ class GmailReader(QObject):
                     #for i in self._structure(msg):
                     #    print(i)
 
+    @threaded
     def getMailsList(self, select="INBOX", critere="UNSEEN", callback=None):
+        log.log_start_method(self, self.getMailsList)
         alist = []
         rv, data = self.mail.select(select)
 
         if rv == 'OK':
             rv, data = self.mail.search("utf-8", critere)
             if rv != 'OK':
+
                 raise Exception("Auncun message")
 
             dataLen = len(data[0].split())
             if dataLen == 0:
+
                 raise Exception("Auncun message")
 
             for i,index in enumerate(data[0].split()):
                 rv, data = self.mail.fetch(index, "(RFC822)")
                 if rv != 'OK':
+
                     raise Exception("Erreur en lisant le message {}".format(index))
 
                 msg = email.message_from_bytes(data[0][1]) #MESSAGE
 
                 subject = u"".join(msg['subject'])
+                log.log_info(subject)
                 alist.append(subject)
 
-        return alist
+        self.sig_receivedMsgList.emit(alist)
+        log.log_info("test")
+        #return alist
 
     def _html2string(self, payload):
         soup = bs(payload, "html.parser")

@@ -10,12 +10,15 @@ import gui.commandGUI as commandGUI
 import gui.addGUI as addGUI
 
 import utils.log as log
+import utils.appdata as appdata
 
 class stackedGUI(QStackedWidget):
 
     userEdited = Signal(str)
     sig_readMail = Signal(str, str)
     updateProgress = Signal(float)
+    sig_getMsgList = Signal()
+    sig_receivedMsgList = Signal(appdata.Array)
 
     def __init__(self, parent=None):
         QStackedWidget.__init__(self,parent)
@@ -49,6 +52,7 @@ class stackedGUI(QStackedWidget):
         self.setCurrentWidget(self.command)
 
     def openAddSite(self):
+        self.add.sig_getMsgList.emit()
         self.setCurrentWidget(self.add)
 
     def openRead(self):
@@ -63,6 +67,9 @@ class stackedGUI(QStackedWidget):
     def _connectSignals(self):
         self.home.userEdited.connect(self.openReadWithUser)
         self.read.sig_readMail.connect(self.on_sig_readMail)
+        self.add.sig_getMsgList.connect(self.on_getMsgList)
+
+        self.sig_receivedMsgList.connect(self.on_receivedMsgList)
         self.updateProgress.connect(self.on_updateProgress)
 
     def on_sig_readMail(self, select=None, critere=None):
@@ -72,3 +79,11 @@ class stackedGUI(QStackedWidget):
     def on_updateProgress(self, progress):
         log.log_start_method(self, self.on_updateProgress)
         self.read.updateProgress.emit(progress)
+
+    def on_getMsgList(self):
+        log.log_start_method(self, self.on_getMsgList)
+        self.sig_getMsgList.emit()
+
+    def on_receivedMsgList(self, alist):
+        log.log_start_method(self, self.on_receivedMsgList)
+        self.add.sig_receivedMsgList.emit(alist)

@@ -6,6 +6,7 @@ from PySide2.QtWidgets import (QWidget, QPushButton, QLabel, QVBoxLayout,
 
 from utils.emailreader import GmailReader
 import utils.log as log
+import utils.appdata as appdata
 
 class ScrollQLabel(QWidget):
     def __init__(self, *args, **kwargs):
@@ -38,6 +39,8 @@ class ScrollQLabel(QWidget):
             self.lay.insertWidget(self.lay.count() - 1, QLabel(str(i) + " ..... "+ item))
 
 class addGUI(QWidget):
+    sig_getMsgList = Signal()
+    sig_receivedMsgList = Signal(appdata.Array)
 
     def __init__(self, parent=None):
         QWidget.__init__(self,parent)
@@ -47,6 +50,7 @@ class addGUI(QWidget):
         self.msgList = []
 
         self.initUI()
+        self._connectSignals()
 
     def __del__(self):
         log.log_del_object(self)
@@ -60,12 +64,15 @@ class addGUI(QWidget):
         self.searchText = QLabel("Exemple de courriel à ouvrir:")
         self.searchLayout.addWidget(self.searchText)
 
+
         self.mailsComboBox = QComboBox()
-        for i in self.getMailsList():
-            self.mailsComboBox.addItem(i)
+        #self.sig_getMsgList.emit()
+        #for i in self.getMailsList():
+        #    self.mailsComboBox.addItem(i)
         self.searchLayout.addWidget(self.mailsComboBox)
         #self.searchBar = QLineEdit("Objet")
         #self.searchLayout.addWidget(self.searchBar)
+
 
         self.openButton = QPushButton("Ouvrir")
         self.openButton.clicked.connect(self.openMail)
@@ -128,6 +135,14 @@ class addGUI(QWidget):
         self.layout.addWidget(self.addButton)
 
         self.setLayout(self.layout)
+
+    def _connectSignals(self):
+        self.sig_receivedMsgList.connect(self.buildComboBox)
+
+    def buildComboBox(self, alist):
+        log.log_start_method(self, self.buildComboBox)
+        for i in alist:
+            self.mailsComboBox.addItem(i)
 
     def openMail(self):
         msgList = ["Hello", "World", "Gabriel", "Lauzier", "Hockey"]
