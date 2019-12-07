@@ -160,12 +160,15 @@ class GmailReader(QObject):
 
                 msg = email.message_from_bytes(data[0][1]) #MESSAGE
 
-                subject = u"".join(msg['subject'])
-                log.log_info(subject)
-                alist.append(subject)
+                subject, encoding = decode_header(msg['subject'])[0]
+                if type(subject) is bytes:
+                    log.log_info(subject.decode(encoding))
+                    alist.append(subject.decode(encoding))
+                else:
+                    log.log_info(subject)
+                    alist.append(subject)
 
         self.sig_receivedMsgList.emit(alist)
-        log.log_info("test")
         #return alist
 
     def _html2string(self, payload):
