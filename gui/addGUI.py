@@ -61,8 +61,8 @@ class addGUI(QWidget):
         self.searchLayout.addWidget(self.searchText)
 
         self.mailsComboBox = QComboBox()
-        #for i in self.getMailsList():
-        #    self.mailsComboBox.addItem(i)
+        for i in self.getMailsList():
+            self.mailsComboBox.addItem(i)
         self.searchLayout.addWidget(self.mailsComboBox)
         #self.searchBar = QLineEdit("Objet")
         #self.searchLayout.addWidget(self.searchBar)
