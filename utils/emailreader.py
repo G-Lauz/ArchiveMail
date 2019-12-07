@@ -139,7 +139,7 @@ class GmailReader(QObject):
     def getMailsList(self, select="INBOX", critere="UNSEEN", callback=None):
         log.log_start_method(self, self.getMailsList)
         alist = []
-        rv, data = self.mail.select(select)
+        rv, data = self.mail.select(select, readonly=True)
 
         if rv == 'OK':
             rv, data = self.mail.search("utf-8", critere)
