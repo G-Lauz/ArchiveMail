@@ -160,16 +160,30 @@ class GmailReader(QObject):
 
                 msg = email.message_from_bytes(data[0][1]) #MESSAGE
 
-                subject, encoding = decode_header(msg['subject'])[0]
-                if type(subject) is bytes:
-                    log.log_info(subject.decode(encoding))
-                    alist.append(subject.decode(encoding))
-                else:
-                    log.log_info(subject)
-                    alist.append(subject)
+
 
         self.sig_receivedMsgList.emit(alist)
-        #return alist
+
+    def getSubjects(self, messages):
+        alist = []
+        for msg in messages:
+            subject, encoding = decode_header(msg['subject'])[0]
+            if type(subject) is bytes:
+                log.log_info(subject.decode(encoding))
+                alist.append(subject.decode(encoding))
+            else:
+                log.log_info(subject)
+                alist.append(subject)
+        return alist
+
+    def getSubject(self, msg):
+        subject, encoding = decode_header(msg['subject'])[0]
+        if type(subject) is bytes:
+            log.log_info(subject.decode(encoding))
+            return subject.decode(encoding)
+        else:
+            log.log_info(subject)
+            return subject
 
     def _html2string(self, payload):
         soup = bs(payload, "html.parser")
