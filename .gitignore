@@ -9,3 +9,4 @@ build
 dist
 setup.py
 mainGUI.spec
+.venv
