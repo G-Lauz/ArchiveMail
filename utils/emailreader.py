@@ -113,7 +113,7 @@ class GmailReader(QObject):
 
             dataLen = len(data[0].split())
             if dataLen == 0:
-                log.log_info('Aucun message')
+                log.log_err('Aucun message')
                 raise Exception("Auncun message")
 
             for i,index in enumerate(data[0].split()):
@@ -121,7 +121,7 @@ class GmailReader(QObject):
 
                 rv, data = self.mail.fetch(index, "(RFC822)")
                 if rv != 'OK':
-                    log.log_info("Erreur en lisant le message {}".format(index))
+                    log.log_err("Erreur en lisant le message {}".format(index))
                     raise Exception("Erreur en lisant le message {}".format(index))
 
                 msg = email.message_from_bytes(data[0][1]) #MESSAGE
@@ -168,20 +168,20 @@ class GmailReader(QObject):
         for msg in messages:
             subject, encoding = decode_header(msg['subject'])[0]
             if type(subject) is bytes:
-                log.log_info(subject.decode(encoding))
+                #log.log_info(subject.decode(encoding))
                 alist.append(subject.decode(encoding))
             else:
-                log.log_info(subject)
+                #log.log_info(subject)
                 alist.append(subject)
         return alist
 
     def getSubject(self, msg):
         subject, encoding = decode_header(msg['subject'])[0]
         if type(subject) is bytes:
-            log.log_info(subject.decode(encoding))
+            #log.log_info(subject.decode(encoding))
             return subject.decode(encoding)
         else:
-            log.log_info(subject)
+            #log.log_info(subject)
             return subject
 
     def _html2string(self, payload):
@@ -242,6 +242,7 @@ class GmailReader(QObject):
                     )
 
     def getdataList(self, msg):
+        log.log_start_method(self, self.getdataList)
         if msg.is_multipart():
             if len(list(msg.walk())) >= 3 + 1:  #TROUVER UNE MEILLEUR SOLUTION
                 message = self._readType(list(msg.walk())[3])
@@ -300,7 +301,7 @@ class GmailReader(QObject):
         elif interet in dt.readTech():
             return "Technologies"
         else:
-            print(interet)
+            log.log_err(interet)
             return
 
     #===========================================================================

@@ -8,6 +8,7 @@ from PySide2.QtWidgets import (QWidget, QPushButton, QLabel, QVBoxLayout,
 from utils.emailreader import GmailReader
 import utils.log as log
 import utils.appdata as appdata
+from utils.myxml import xmlManipulator
 
 class ScrollQLabel(QWidget):
     def __init__(self, *args, **kwargs):
@@ -41,7 +42,8 @@ class ScrollQLabel(QWidget):
             widget = item.widget()
             if widget:
                 widget.deleteLater()
-                self.lay.removeWidget(widget)
+            self.lay.removeWidget(widget)
+            if widget:
                 widget.setParent(None)
 
     def setList(self, list):
@@ -62,6 +64,8 @@ class addGUI(QWidget):
         self.msgList = []
         self.messages_dict = None
         self.reader = GmailReader() #   Reader agent
+
+        self.sites = xmlManipulator('site.xml')
 
         self.initUI()
         self._connectSignals()
@@ -173,21 +177,25 @@ class addGUI(QWidget):
             self.mailsComboBox.addItem(i)
 
     def openMail(self):
-        print(self.mailsComboBox.currentText())
+        log.log_start_method(self, self.openMail)
 
-        self.msgList = self.reader.getdataList(
-                self.messages_dict[
-                    self.mailsComboBox.currentText()#.encode('utf-8')
-                ]
-            )
+        text = self.mailsComboBox.currentText()#.encode('utf-8')
+        self.msgList = self.reader.getdataList(self.messages_dict[text])
 
         self.scrollBox.setList(self.msgList)
-
         self.selectionLayout.addWidget(self.scrollBox)
 
 
     def writeXML(self):
-        return
+        log.log_start_method(self, self.writeXML)
+
+        self.sites.write_data(appdata.Bunch(
+            email= self.emailBar.text(),
+            prenom= self.prenomBar.text(),
+            nom= self.nomBar.text(),
+            interet= self.interetBar.text(),
+            site= self.siteBar.text()
+        ))
 
 if __name__ == "__main__":
    app = QApplication(sys.argv)
