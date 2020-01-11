@@ -1,6 +1,7 @@
 import sys
 from PySide2 import QtWidgets, QtGui, QtCore
 from PySide2.QtCore import QObject, Signal, Slot
+from PySide2.QtGui import QIntValidator
 from PySide2.QtWidgets import (QWidget, QPushButton, QLabel, QVBoxLayout,
     QHBoxLayout, QMessageBox, QComboBox, QLineEdit, QScrollArea)
 
@@ -34,10 +35,20 @@ class ScrollQLabel(QWidget):
     def __str__(self):
         return str(self.__class__)
 
+    def delList(self):
+        while self.lay.count():
+            item = self.lay.itemAt(0)
+            widget = item.widget()
+            if widget:
+                widget.deleteLater()
+                self.lay.removeWidget(widget)
+                widget.setParent(None)
 
     def setList(self, list):
+        self.delList()
         for i, item in enumerate(list):
             self.lay.insertWidget(i, QLabel(str(i) + " ..... "+ item))
+            #self.lay.count() -1
 
 class addGUI(QWidget):
     sig_getMsgList = Signal()
@@ -77,9 +88,9 @@ class addGUI(QWidget):
         #self.searchLayout.addWidget(self.searchBar)
 
 
-        self.openButton = QPushButton("Ouvrir")
-        self.openButton.clicked.connect(self.openMail)
-        self.searchLayout.addWidget(self.openButton)
+        #self.openButton = QPushButton("Ouvrir")
+        #self.openButton.clicked.connect(self.openMail)
+        #self.searchLayout.addWidget(self.openButton)
 
         self.layout.addLayout(self.searchLayout)
 
@@ -92,35 +103,44 @@ class addGUI(QWidget):
         # Layout individuelle des champs
         self.emailLayout = QHBoxLayout()
         self.emailText = QLabel("Email:")
-        self.emailBar = QLineEdit("# de ligne")
+        self.emailBar = QLineEdit()
+        self.emailBar.setPlaceholderText("# de ligne")
+        self.emailBar.setValidator(QIntValidator(0,1024,None))
         self.emailLayout.addWidget(self.emailText)
         self.emailLayout.addWidget(self.emailBar)
         self.champLayout.addLayout(self.emailLayout)
 
         self.prenomLayout = QHBoxLayout()
         self.prenomText = QLabel("Prenom:")
-        self.prenomBar = QLineEdit("# de ligne")
+        self.prenomBar = QLineEdit()
+        self.prenomBar.setPlaceholderText("# de ligne")
+        self.prenomBar.setValidator(QIntValidator(0,1024,None))
         self.prenomLayout.addWidget(self.prenomText)
         self.prenomLayout.addWidget(self.prenomBar)
         self.champLayout.addLayout(self.prenomLayout)
 
         self.nomLayout = QHBoxLayout()
         self.nomText = QLabel("Nom:")
-        self.nomBar = QLineEdit("# de ligne")
+        self.nomBar = QLineEdit()
+        self.nomBar.setPlaceholderText("# de ligne")
+        self.nomBar.setValidator(QIntValidator(0,1024,None))
         self.nomLayout.addWidget(self.nomText)
         self.nomLayout.addWidget(self.nomBar)
         self.champLayout.addLayout(self.nomLayout)
 
         self.interetLayout = QHBoxLayout()
         self.interetText = QLabel("Intérêt:")
-        self.interetBar = QLineEdit("# de ligne")
+        self.interetBar = QLineEdit()
+        self.interetBar.setPlaceholderText("# de ligne")
+        self.interetBar.setValidator(QIntValidator(0,1024,None))
         self.interetLayout.addWidget(self.interetText)
         self.interetLayout.addWidget(self.interetBar)
         self.champLayout.addLayout(self.interetLayout)
 
         self.siteLayout = QHBoxLayout()
         self.siteText = QLabel("Site:")
-        self.siteBar = QLineEdit("# de ligne")
+        self.siteBar = QLineEdit()
+        self.siteBar.setPlaceholderText("Nom ex: Jobboom")
         self.siteLayout.addWidget(self.siteText)
         self.siteLayout.addWidget(self.siteBar)
         self.champLayout.addLayout(self.siteLayout)
@@ -141,6 +161,7 @@ class addGUI(QWidget):
 
     def _connectSignals(self):
         self.sig_receivedMsgList.connect(self.buildComboBox)
+        self.mailsComboBox.currentTextChanged.connect(self.openMail)
 
     def buildComboBox(self, alist):
         log.log_start_method(self, self.buildComboBox)
@@ -152,13 +173,8 @@ class addGUI(QWidget):
             self.mailsComboBox.addItem(i)
 
     def openMail(self):
-        #critere = b'(SUBJECT "%s")' % self.mailsComboBox.currentText().encode('utf-8')
-
-        # Envoyé un signal au main pour faire la requête de la liste de ligne
-
         print(self.mailsComboBox.currentText())
 
-        #self.readMail._original(self, critere=critere, callback=self._getMsgList)
         self.msgList = self.reader.getdataList(
                 self.messages_dict[
                     self.mailsComboBox.currentText()#.encode('utf-8')
