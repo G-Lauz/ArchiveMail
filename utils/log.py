@@ -64,3 +64,7 @@ def log_start_method(object, method):
 def log_info(message : str):
     msg = Colors.fg.lightgreen + message + Colors.reset
     log_thread(msg)
+
+def log_err(message : str):
+    msg = Colors.fg.lightred + message + Colors.reset
+    log_thread(msg)
