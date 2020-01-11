@@ -9,11 +9,17 @@ import utils.emailreader as GmailReader
 from utils.threadpool import CustomThread
 import utils.log as log
 
+import ctypes #Couleur cmd
+
 class Main(QObject):
     #Define Signal
 
     def __init__(self, parent=None):
         super(self.__class__, self).__init__(parent)
+
+        # couleur cmd
+        kernel32 = ctypes.windll.kernel32
+        kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)
 
 
         log.log_init_object(self)
