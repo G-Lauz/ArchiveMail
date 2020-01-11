@@ -34,9 +34,10 @@ class ScrollQLabel(QWidget):
     def __str__(self):
         return str(self.__class__)
 
+
     def setList(self, list):
         for i, item in enumerate(list):
-            self.lay.insertWidget(self.lay.count() - 1, QLabel(str(i) + " ..... "+ item))
+            self.lay.insertWidget(i, QLabel(str(i) + " ..... "+ item))
 
 class addGUI(QWidget):
     sig_getMsgList = Signal()
@@ -163,8 +164,6 @@ class addGUI(QWidget):
                     self.mailsComboBox.currentText()#.encode('utf-8')
                 ]
             )
-
-        print(self.msgList)
 
         self.scrollBox.setList(self.msgList)
 
