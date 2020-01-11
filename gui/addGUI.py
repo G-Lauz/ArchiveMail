@@ -48,6 +48,8 @@ class addGUI(QWidget):
         log.log_init_object(self)
 
         self.msgList = []
+        self.messages_dict = None
+        self.reader = GmailReader() #   Reader agent
 
         self.initUI()
         self._connectSignals()
@@ -141,21 +143,33 @@ class addGUI(QWidget):
 
     def buildComboBox(self, alist):
         log.log_start_method(self, self.buildComboBox)
-        for i in alist:
+
+        subjects = self.reader.getSubjects(alist)
+        # Create a dictionary with subject as keys and alist as values
+        self.messages_dict = dict(zip(subjects, alist))
+        for i in subjects:
             self.mailsComboBox.addItem(i)
 
     def openMail(self):
-        msgList = ["Hello", "World", "Gabriel", "Lauzier", "Hockey"]
-        critere = b'(SUBJECT "%s")' % self.mailsComboBox.currentText().encode('utf-8')
-        print(type(critere))
-        self.readMail._original(self, critere=critere, callback=self._getMsgList)
+        #critere = b'(SUBJECT "%s")' % self.mailsComboBox.currentText().encode('utf-8')
+
+        # Envoyé un signal au main pour faire la requête de la liste de ligne
+
+        print(self.mailsComboBox.currentText())
+
+        #self.readMail._original(self, critere=critere, callback=self._getMsgList)
+        self.msgList = self.reader.getdataList(
+                self.messages_dict[
+                    self.mailsComboBox.currentText()#.encode('utf-8')
+                ]
+            )
+
+        print(self.msgList)
+
         self.scrollBox.setList(self.msgList)
 
         self.selectionLayout.addWidget(self.scrollBox)
 
-    def _getMsgList(self, msg):
-        print(callback)
-        self.msgList = self.getdataList(msg)
 
     def writeXML(self):
         return

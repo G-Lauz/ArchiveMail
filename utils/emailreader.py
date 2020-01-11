@@ -159,8 +159,7 @@ class GmailReader(QObject):
                     raise Exception("Erreur en lisant le message {}".format(index))
 
                 msg = email.message_from_bytes(data[0][1]) #MESSAGE
-
-
+                alist.append(msg)
 
         self.sig_receivedMsgList.emit(alist)
 
