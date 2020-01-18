@@ -2,7 +2,8 @@ import sys
 from PySide2 import QtWidgets, QtGui, QtCore
 from PySide2.QtCore import QObject, Signal, Slot
 from PySide2.QtWidgets import (QWidget, QGridLayout, QComboBox, QPushButton,
-    QLabel, QVBoxLayout, QButtonGroup, QCheckBox, QFileDialog)
+    QLabel, QVBoxLayout, QHBoxLayout, QButtonGroup, QCheckBox, QFileDialog,
+    QGroupBox)
 
 from utils.mycsv import csvManipulator
 from utils.dbsqlite import PostulantDB
@@ -28,27 +29,41 @@ class commandGUI(QWidget):
         return str(self.__class__)
 
     def initUI(self):
-        self.checkboxLayout = QVBoxLayout()
-        self.choiceText = QLabel("Options :")
-        self.checkboxLayout.addWidget(self.choiceText)
 
+        self.domaineGroup = QGroupBox("Domaines")
+        self.domaineLayout = QVBoxLayout()
+        self.domaineComboBox = QComboBox()
+        self._buildComboBox([
+            "Tout les domaines",
+            "Administration soutien et services",
+            "Genie",
+            "Metiers manuels",
+            "Operations tactiques et securite",
+            "Soins de la sante",
+            "Technologies"
+        ])
+        self.domaineLayout.addWidget(self.domaineComboBox)
+        self.domaineGroup.setLayout(self.domaineLayout)
+
+        self.optionsGroup = QGroupBox("Options")
+        self.checkboxLayout = QVBoxLayout()
         self.buttonGroup = QButtonGroup()
         for i, info in enumerate(Data().INFO):
             checkbox = QCheckBox(info, self)
             self.buttonGroup.addButton(checkbox, i)
             self.checkboxLayout.addWidget(checkbox)
         self.buttonGroup.setExclusive(False)
+        self.optionsGroup.setLayout(self.checkboxLayout)
 
+        self.detailGroup = QGroupBox("Détails")
         self.detailLayout = QVBoxLayout()
-        self.detailText = QLabel("Détails :")
-        self.detailLayout.addWidget(self.detailText)
         self.infoText = QLabel()
         self.infoText.setWordWrap(True)
         self.detailLayout.addWidget(self.infoText)
+        self.detailGroup.setLayout(self.detailLayout)
 
+        self.dateGroup = QGroupBox("Périodes")
         self.dateLayout = QVBoxLayout()
-        self.dateText = QLabel("Période :")
-        self.dateLayout.addWidget(self.dateText)
 
         self.yearComboBox = QComboBox()
         #self.yearComboBox.addItem("Tout les années")
@@ -62,15 +77,25 @@ class commandGUI(QWidget):
             self.monthComboBox.addItem(i)
         self.dateLayout.addWidget(self.monthComboBox)
 
+        self.dateGroup.setLayout(self.dateLayout)
+
         self.exportButton = QPushButton("Exporter")
         self.exportButton.clicked.connect(self.exportcsv)
 
-        layout = QGridLayout()
-        layout.addLayout(self.checkboxLayout, 0, 0)
-        layout.addLayout(self.detailLayout, 1, 0)
-        layout.addLayout(self.dateLayout, 0, 1)
-        layout.addWidget(self.exportButton, 2, 1)
-        self.setLayout(layout)
+        self.mainLayout = QVBoxLayout()
+        self.mainLayout.addWidget(self.domaineGroup)
+        self.subLayout = QHBoxLayout()
+        self.subLayout.addWidget(self.optionsGroup)
+        self.subLayout.addWidget(self.dateGroup)
+        self.mainLayout.addLayout(self.subLayout)
+        self.mainLayout.addWidget(self.detailGroup)
+        self.mainLayout.addWidget(self.exportButton)
+        self.setLayout(self.mainLayout)
+
+    def _buildComboBox(self, alist):
+        log.log_start_method(self, self._buildComboBox)
+        for i in alist:
+            self.domaineComboBox.addItem(i)
 
     def exportcsv(self, filname : str):
         filename = QFileDialog.getSaveFileName(None, "Save F:xile",

@@ -289,7 +289,7 @@ class GmailReader(QObject):
         dt = Data()
         interet = work.lower()
         if interet in dt.readAdmin():
-            return "Administration, soutien et services"
+            return "Administration soutien et services"
         elif interet in dt.readGenie():
             return "Genie"
         elif interet in dt.readManuels():
