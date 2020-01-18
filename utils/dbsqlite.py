@@ -153,7 +153,7 @@ class PostulantDB():
 
         return items
 
-    def selectAValue(self, table : str, type : str, data : str):
+    def selectAValue(self, table : str, type : str, data : str, col:list=None):
         """Sélectionner et retourner tout les lignes contenant la valeur cherché
         Paramètre:
         - table : str, nom de la table
@@ -163,11 +163,31 @@ class PostulantDB():
         - : list, lignes contenant la valeur recherché"""
 
         items = []
-        command = "SELECT * FROM {} WHERE trim({}) = \"{}\"".format(
+        command = "SELECT "
+
+        ## New ##
+        if col:
+            for i in data:
+                if i == data[-1]:
+                    command = command + "".join(self._scrub(i) + " ")
+                else:
+                    command = command + "".join(self._scrub(i) + ", ")
+        else:
+            command = command + "* "
+        ## New ##
+
+        command = "FROM {} WHERE trim({}) = \"{}\"".format(
             self._scrub(table),self._scrub(type),self._scrub(data))
 
-        for row in self.cursor.execute(command).fetchall():
-            items.append(tuple(i for i in row if i != "none"))
+        try:
+            for row in self.cursor.execute(command).fetchall():
+                ## New ##
+                items.append(row)
+                ## New ##
+                ##items.append(tuple(i for i in row if i != "none"))
+        except sqlite3.OperationalError as e:
+            raise Exception(e)
+
         return items
 
     def countAValue(self, table : str, type : str, data : str):
