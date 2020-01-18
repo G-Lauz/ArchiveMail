@@ -18,6 +18,7 @@ class PostulantDB():
     - PRENOM : str
     - NOM : str
     - INTERET : str
+    - DOMAINE : str
     - SITE : str
 
     Méthodes publique:
@@ -55,6 +56,7 @@ class PostulantDB():
         self._NOM = "NOM"
         self._INTERET = "INTERET"
         self._SITE = "SITE"
+        self._DOMAINE = "DOMAINE"
 
         #Vérifier si un fichier postulantdb.py existe en créé un si non
         #et établir la conenction à la DB
@@ -76,6 +78,7 @@ class PostulantDB():
                 NOM TEXT,
                 INTERET TEXT,
                 SITE TEXT,
+                DOMAINE TEXT,
                 MOIS INT);'''.format(self._scrub(self.TABLETODAY))
             self.cursor.execute(command)
 
@@ -88,7 +91,7 @@ class PostulantDB():
         return str(self.__class__)
 
     def insert(self, email:str="none", sexe:str="none", prenom:str="none",
-        nom:str="none", interet:str="none", site:str="none"):
+        nom:str="none", interet:str="none", site:str="none", domaine:str="none"):
         """Méthode permettant d'insérer des valeurs dans DB du mois présent
         Paramètre:
         - email : str
@@ -96,12 +99,13 @@ class PostulantDB():
         - prenom : str
         - nom : str
         - interet : str
-        - site : str"""
+        - site : str
+        - domaine : str"""
 
         mois = self._time()[1]
-        info = [email,sexe,prenom,nom,interet,site,mois]
+        info = [email,sexe,prenom,nom,interet,site,domaine,mois]
         command = '''INSERT INTO {}
-            (COURIEL,SEXE,PRENOM,NOM,INTERET,SITE,MOIS)
+            (COURIEL,SEXE,PRENOM,NOM,INTERET,SITE,DOMAINE,MOIS)
             VALUES (?,?,?,?,?,?,?)'''.format(self._scrub(self.TABLETODAY))
 
         self.cursor.execute(command, info)
@@ -270,6 +274,9 @@ class PostulantDB():
     def _get_SITE(self):
         return self._SITE
 
+    def _get_DOMAINE(self):
+        return self._DOMAINE
+
     def _set_conn(self, conn):
         self._conn = conn
 
@@ -294,6 +301,7 @@ class PostulantDB():
     NOM = property(fget=_get_NOM)
     INTERET = property(fget=_get_INTERET)
     SITE = property(fget=_get_SITE)
+    DOMAINE = property(fget=_get_DOMAINE)
 
 #Main temporaire pour tester la class individuellement
 if __name__ == "__main__":
