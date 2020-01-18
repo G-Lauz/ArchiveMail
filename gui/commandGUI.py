@@ -66,15 +66,18 @@ class commandGUI(QWidget):
         self.dateLayout = QVBoxLayout()
 
         self.yearComboBox = QComboBox()
-        #self.yearComboBox.addItem("Tout les années")
+        self.yearComboBox.addItem("Toutes les années")
         for i in self._setYear(self._db.tableList()):
             self.yearComboBox.addItem(i)
+
+        self.yearComboBox.currentIndexChanged.connect(self._lock_monthComboBox)
         self.dateLayout.addWidget(self.yearComboBox)
 
         self.monthComboBox = QComboBox()
         self.monthComboBox.addItem("Année entière")
         for i in self._setMonth(self._db.tableList()):
             self.monthComboBox.addItem(i)
+        self.monthComboBox.setEnabled(False)
         self.dateLayout.addWidget(self.monthComboBox)
 
         self.dateGroup.setLayout(self.dateLayout)
@@ -96,6 +99,12 @@ class commandGUI(QWidget):
         log.log_start_method(self, self._buildComboBox)
         for i in alist:
             self.domaineComboBox.addItem(i)
+
+    def _lock_monthComboBox(self, index):
+        if index == 0:
+            self.monthComboBox.setEnabled(False)
+        else:
+            self.monthComboBox.setEnabled(True)
 
     def exportcsv(self, filname : str):
         filename = QFileDialog.getSaveFileName(None, "Save F:xile",
@@ -134,16 +143,22 @@ class commandGUI(QWidget):
                 + str(e))
 
     def _getTables(self):
-        if self.monthComboBox.currentIndex() != 0:
-            return [self._db.TABLENAME + self.yearComboBox.currentText()
-                + str(Data().DICTMOIS[self.monthComboBox.currentText ()])]
-        else:
-            alist = []
-            for i in self._db.tableList():
-                if self.yearComboBox.currentText() in i:
-                    alist.append(self._db.TABLENAME +
+        alist = []
+        tableList = self._db.tableList()
+
+        if self.yearComboBox.currentIndex() != 0:
+            if self.monthComboBox.currentIndex() != 0:
+                return [self._db.TABLENAME + self.yearComboBox.currentText()
+                    + str(Data().DICTMOIS[self.monthComboBox.currentText ()])]
+            else:
+                for i in tableList:
+                    if self.yearComboBox.currentText() in i:
+                        alist.append(self._db.TABLENAME +
                         self.yearComboBox.currentText() + i[13:])
-            return alist
+                return alist
+        else:
+            return tableList
+
 
     def _setYear(self, tables : list):
         seen = set()
