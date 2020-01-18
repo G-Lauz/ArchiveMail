@@ -112,10 +112,20 @@ class commandGUI(QWidget):
             self._csv = csvManipulator(filename[0])
 
             fulldata = []
-            for i in table:
-                data = self._db.selectThese(i, querry)
-                for j in data:
-                    fulldata.append(j)
+
+            if self.domaineComboBox.currentIndex() == 0:
+                for i in table:
+                    data = self._db.selectThese(i, querry)
+                    for j in data:
+                        fulldata.append(j)
+            else:
+                for i in table:
+                    data = self._db.selectAValue(
+                        i, "INTERET", self.domaineComboBox.currentText(),
+                        col=querry
+                    )
+                    for j in data:
+                        fulldata.append(j)
 
             self._csv.write(fulldata)
 

@@ -153,12 +153,13 @@ class PostulantDB():
 
         return items
 
-    def selectAValue(self, table : str, type : str, data : str, col:list=None):
+    def selectAValue(self, table : str, type : str, value : str, col:list=None):
         """Sélectionner et retourner tout les lignes contenant la valeur cherché
         Paramètre:
         - table : str, nom de la table
         - type : str, colonne de la table
-        - data : str, valeur recherché
+        - value : str, valeur recherché
+        - col : list, list des colonne à retourner
         Retourne:
         - : list, lignes contenant la valeur recherché"""
 
@@ -167,8 +168,8 @@ class PostulantDB():
 
         ## New ##
         if col:
-            for i in data:
-                if i == data[-1]:
+            for i in col:
+                if i == col[-1]:
                     command = command + "".join(self._scrub(i) + " ")
                 else:
                     command = command + "".join(self._scrub(i) + ", ")
@@ -176,8 +177,10 @@ class PostulantDB():
             command = command + "* "
         ## New ##
 
-        command = "FROM {} WHERE trim({}) = \"{}\"".format(
-            self._scrub(table),self._scrub(type),self._scrub(data))
+        command = command + "FROM {} WHERE trim({}) = \"{}\"".format(
+            self._scrub(table),self._scrub(type),value)
+
+        log.log_info(command)
 
         try:
             for row in self.cursor.execute(command).fetchall():
@@ -190,17 +193,17 @@ class PostulantDB():
 
         return items
 
-    def countAValue(self, table : str, type : str, data : str):
+    def countAValue(self, table : str, type : str, value : str):
         """Compte le nombre d'instance d'une valeur dans une table donnée
         Paramètre:
         - table : str, nom de la table
         - type : str, colonne de la table
-        - data : str, valeur recherché
+        - value : str, valeur recherché
         Retourne:
         - : int, nombre d'instance de la valeur dans la table"""
 
         command = "SELECT * FROM {} WHERE trim({}) = \"{}\"".format(
-            self._scrub(table),self._scrub(type),self._scrub(data))
+            self._scrub(table),self._scrub(type),self._scrub(value))
 
         return len(self.cursor.execute(command).fetchall())
 
