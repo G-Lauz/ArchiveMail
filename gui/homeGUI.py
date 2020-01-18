@@ -17,6 +17,7 @@ class homeGUI(QWidget):
         self.userText = QLabel("Adresse courriel :")
 
         self.userEdit = QLineEdit()
+        self.userEdit.setPlaceholderText("exemple@gmail.com")
         self.userEdit.returnPressed.connect(self.openRead)
 
         layout = QtWidgets.QHBoxLayout()

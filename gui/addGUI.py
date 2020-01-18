@@ -3,7 +3,7 @@ from PySide2 import QtWidgets, QtGui, QtCore
 from PySide2.QtCore import QObject, Signal, Slot
 from PySide2.QtGui import QIntValidator
 from PySide2.QtWidgets import (QWidget, QPushButton, QLabel, QVBoxLayout,
-    QHBoxLayout, QMessageBox, QComboBox, QLineEdit, QScrollArea)
+    QHBoxLayout, QMessageBox, QComboBox, QLineEdit, QScrollArea, QMessageBox)
 
 from utils.emailreader import GmailReader
 import utils.log as log
@@ -51,6 +51,13 @@ class ScrollQLabel(QWidget):
         for i, item in enumerate(list):
             self.lay.insertWidget(i, QLabel(str(i) + " ..... "+ item))
             #self.lay.count() -1
+
+class ClickableLineEdit(QLineEdit):
+    clicked = Signal()
+
+    def mousePressEvent(self, event):
+        super(ClickableLineEdit, self).mousePressEvent(event)
+        self.clicked.emit()
 
 class addGUI(QWidget):
     sig_getMsgList = Signal()
@@ -107,7 +114,8 @@ class addGUI(QWidget):
         # Layout individuelle des champs
         self.emailLayout = QHBoxLayout()
         self.emailText = QLabel("Email:")
-        self.emailBar = QLineEdit()
+        self.emailBar = ClickableLineEdit()
+        self.emailBar.clicked.connect(self.emailBar.clear)
         self.emailBar.setPlaceholderText("# de ligne")
         self.emailBar.setValidator(QIntValidator(0,1024,None))
         self.emailLayout.addWidget(self.emailText)
@@ -116,7 +124,8 @@ class addGUI(QWidget):
 
         self.prenomLayout = QHBoxLayout()
         self.prenomText = QLabel("Prenom:")
-        self.prenomBar = QLineEdit()
+        self.prenomBar = ClickableLineEdit()
+        self.prenomBar.clicked.connect(self.prenomBar.clear)
         self.prenomBar.setPlaceholderText("# de ligne")
         self.prenomBar.setValidator(QIntValidator(0,1024,None))
         self.prenomLayout.addWidget(self.prenomText)
@@ -125,7 +134,8 @@ class addGUI(QWidget):
 
         self.nomLayout = QHBoxLayout()
         self.nomText = QLabel("Nom:")
-        self.nomBar = QLineEdit()
+        self.nomBar = ClickableLineEdit()
+        self.nomBar.clicked.connect(self.nomBar.clear)
         self.nomBar.setPlaceholderText("# de ligne")
         self.nomBar.setValidator(QIntValidator(0,1024,None))
         self.nomLayout.addWidget(self.nomText)
@@ -134,7 +144,8 @@ class addGUI(QWidget):
 
         self.interetLayout = QHBoxLayout()
         self.interetText = QLabel("Intérêt:")
-        self.interetBar = QLineEdit()
+        self.interetBar = ClickableLineEdit()
+        self.interetBar.clicked.connect(self.interetBar.clear)
         self.interetBar.setPlaceholderText("# de ligne")
         self.interetBar.setValidator(QIntValidator(0,1024,None))
         self.interetLayout.addWidget(self.interetText)
@@ -143,7 +154,8 @@ class addGUI(QWidget):
 
         self.siteLayout = QHBoxLayout()
         self.siteText = QLabel("Site:")
-        self.siteBar = QLineEdit()
+        self.siteBar = ClickableLineEdit()
+        self.siteBar.clicked.connect(self.siteBar.clear)
         self.siteBar.setPlaceholderText("Nom ex: Jobboom")
         self.siteLayout.addWidget(self.siteText)
         self.siteLayout.addWidget(self.siteBar)
@@ -189,6 +201,10 @@ class addGUI(QWidget):
     def writeXML(self):
         log.log_start_method(self, self.writeXML)
 
+        msgBox = QMessageBox();
+        msgBox.setText("Le site de provenance a été sauvegardé")
+        msgBox.exec()
+
         self.sites.write_data(appdata.Bunch(
             email= self.emailBar.text(),
             prenom= self.prenomBar.text(),
@@ -196,6 +212,13 @@ class addGUI(QWidget):
             interet= self.interetBar.text(),
             site= self.siteBar.text()
         ))
+
+        self.emailBar.clear()
+        self.prenomBar.clear()
+        self.nomBar.clear()
+        self.interetBar.clear()
+        self.siteBar.clear()
+
 
 if __name__ == "__main__":
    app = QApplication(sys.argv)

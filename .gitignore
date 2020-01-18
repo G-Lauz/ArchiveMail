@@ -10,3 +10,4 @@ dist
 setup.py
 mainGUI.spec
 .venv
+activate.bat
