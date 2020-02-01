@@ -169,7 +169,8 @@ class GmailReader(QObject):
             subject, encoding = decode_header(msg['subject'])[0]
             if type(subject) is bytes:
                 #log.log_info(subject.decode(encoding))
-                alist.append(subject.decode(encoding))
+                if encoding:
+                    alist.append(subject.decode(encoding))
             else:
                 #log.log_info(subject)
                 alist.append(subject)
@@ -204,13 +205,11 @@ class GmailReader(QObject):
     def _readType(self, msg):
 
         if msg.get_content_type() == 'text/plain':
-            print("Plain text")
             try:
                 return msg.get_payload(decode=True).decode('utf-8')
             except UnicodeDecodeError:
                 return msg.get_payload(decode=True).decode('latin-1')
         elif msg.get_content_type() == 'text/html':
-            print("HTML")
             try:
                 return self._html2string(msg.get_payload(decode=True).decode('utf-8'))
             except UnicodeDecodeError:

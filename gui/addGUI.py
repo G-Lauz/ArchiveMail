@@ -194,7 +194,11 @@ class addGUI(QWidget):
         text = self.mailsComboBox.currentText()#.encode('utf-8')
         self.msgList = self.reader.getdataList(self.messages_dict[text])
 
-        self.scrollBox.setList(self.msgList)
+        if self.msgList:
+            self.scrollBox.setList(self.msgList)
+        else:
+            self.scrollBox.setList(["Impossible d'ouvrir le couriel"])
+            
         self.selectionLayout.addWidget(self.scrollBox)
 
 
