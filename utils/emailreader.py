@@ -101,7 +101,7 @@ class GmailReader(QObject):
 
 
     @threaded
-    def readMail(self, select="INBOX", critere="ALL", callback=None):
+    def readMail(self, select="INBOX", critere="ALL", callback=None, delete=True):
         log.log_start_method(self, self.readMail)
 
         rv, data = self.mail.select(select)
@@ -129,11 +129,15 @@ class GmailReader(QObject):
                 if callback:
                     callback(msg);
                 else:
-                    self._storedata(self._getdata(msg))
+                    if delete:
+                        self._storedata(self._getdata(msg, index))
+                    else:
+                        self._storedata(self._getdata(msg))
                     #self._getdata(msg)
 
                     #for i in self._structure(msg):
                     #    print(i)
+            #self.mail.expunge()
 
     @threaded
     def getMailsList(self, select="INBOX", critere="UNSEEN", callback=None):
@@ -144,12 +148,10 @@ class GmailReader(QObject):
         if rv == 'OK':
             rv, data = self.mail.search("utf-8", critere)
             if rv != 'OK':
-
                 raise Exception("Auncun message")
 
             dataLen = len(data[0].split())
             if dataLen == 0:
-
                 raise Exception("Auncun message")
 
             for i,index in enumerate(data[0].split()):
@@ -215,7 +217,7 @@ class GmailReader(QObject):
             except UnicodeDecodeError:
                 return self._html2string(msg.get_payload(decode=True).decode('latin-1'))
 
-    def _getdata(self, msg):
+    def _getdata(self, msg, to_delete=None):
         if msg.is_multipart():
             if len(list(msg.walk())) >= 3 + 1:  #TROUVER UNE MEILLEUR SOLUTION
                 message = self._readType(list(msg.walk())[3])
@@ -231,6 +233,9 @@ class GmailReader(QObject):
         for id in self.sites.getChildId(self.sites.root):
             childs = self.sites.getChildTextbyId(id)
             if childs['site'] in message:
+                if to_delete:
+                    log.log_info('deletion of {}'.format(to_delete))
+                    self.mail.store(to_delete, '+X-GM-LABELS', '\\Trash')
                 return appdata.Bunch(
                     email= listLine[childs['email']],
                     sexe= self._defineSexe(listLine[childs['prenom']].strip(":").strip()),
