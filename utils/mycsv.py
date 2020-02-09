@@ -19,12 +19,20 @@ class csvManipulator():
             writer = csv.writer(csvfile, delimiter=';', quotechar='|',
                 quoting=csv.QUOTE_MINIMAL)
             writer.writerows(items)
+            csvfile.close()
 
-    #INUTILE
     def read(self):
-        with open(self.filename, 'rb') as csvfile:
-            reader = csv.reader(csvfile)
-            return reader
+        ## 'rb'
+        alist = list()
+        with open(self.filename, 'r') as csvfile:
+            dialect = csv.Sniffer().sniff(csvfile.read(1024))
+            csvfile.seek(0)
+            reader = csv.DictReader(csvfile, dialect=dialect)
+            for i in reader:
+                alist.append(i)
+            csvfile.close()
+
+        return alist
 
     def _get_filename(self):
         return self._filename

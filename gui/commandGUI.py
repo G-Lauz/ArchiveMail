@@ -1,4 +1,4 @@
-import sys
+import sys, traceback
 from PySide2 import QtWidgets, QtGui, QtCore
 from PySide2.QtCore import QObject, Signal, Slot
 from PySide2.QtWidgets import (QWidget, QGridLayout, QComboBox, QPushButton,
@@ -82,6 +82,9 @@ class commandGUI(QWidget):
 
         self.dateGroup.setLayout(self.dateLayout)
 
+        self.importButton = QPushButton("Importer")
+        self.importButton.clicked.connect(self.importcsv)
+
         self.exportButton = QPushButton("Exporter")
         self.exportButton.clicked.connect(self.exportcsv)
 
@@ -92,6 +95,7 @@ class commandGUI(QWidget):
         self.subLayout.addWidget(self.dateGroup)
         self.mainLayout.addLayout(self.subLayout)
         self.mainLayout.addWidget(self.detailGroup)
+        self.mainLayout.addWidget(self.importButton)
         self.mainLayout.addWidget(self.exportButton)
         self.setLayout(self.mainLayout)
 
@@ -107,7 +111,8 @@ class commandGUI(QWidget):
             self.monthComboBox.setEnabled(True)
 
     def exportcsv(self, filname : str):
-        filename = QFileDialog.getSaveFileName(None, "Save F:xile",
+        log.log_start_method(self, self.exportcsv)
+        filename = QFileDialog.getSaveFileName(None, "Save File",
             "data/untitled.csv", "*.csv *.db *.xlsx *.odt")
 
         table = self._getTables()
@@ -120,7 +125,7 @@ class commandGUI(QWidget):
         try:
             self._csv = csvManipulator(filename[0])
 
-            fulldata = []
+            fulldata = [tuple(querry)]
 
             if self.domaineComboBox.currentIndex() == 0:
                 for i in table:
@@ -138,9 +143,46 @@ class commandGUI(QWidget):
 
             self._csv.write(fulldata)
 
+            self.infoText.setText("Exportation de " + filename[0] + " réussi")
+
         except Exception as e:
             self.infoText.setText("Erreur dans l'exportation des données: \n"
                 + str(e))
+
+            #tb = traceback.format_exc()
+            #print(tb)
+            log.log_err(
+                "\n" +
+                str(traceback.format_exception(*sys.exc_info())[1:2]).strip('[\']') +
+                "\nIN\n" +
+                str(traceback.format_exception(*sys.exc_info())[-2:-1]).strip('[\']')
+            )
+
+    def importcsv(self):
+        filename = QFileDialog.getOpenFileName(self,
+            "Open CSV", "data/", "CSV Files (*.csv)")
+
+        try:
+            self._csv = csvManipulator(filename[0])
+            aListOfDict = self._csv.read()
+            for i in aListOfDict:
+                self._storedata(i)
+
+            self.infoText.setText("Importation de " + filename[0] + " réussi")
+
+        except Exception as e:
+            self.infoText.setText("Erreur dans l'importation des données: \n"
+                + str(e))
+
+            tb = traceback.format_exc()
+            #print(tb)
+            log.log_err(tb)
+
+    def _storedata(self, adict : dict):
+        if adict == None:
+            return
+        self._db = PostulantDB()
+        self._db.insert(**adict)
 
     def _getTables(self):
         alist = []

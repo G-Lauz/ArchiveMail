@@ -41,7 +41,7 @@ class mainGUI(QMainWindow):
     def createActions(self):
         self.readAct = QAction("&Lire",statusTip="un test",
             triggered=self.stacked.openRead)
-        self.exportAct = QAction("&Exporter",statusTip="un test",
+        self.exportAct = QAction("&Exporter / Importer",statusTip="un test",
             triggered=self.stacked.openCommand)
         self.addAct = QAction("&Ajouter un site", statusTip="un test",
             triggered=self.stacked.openAddSite)
