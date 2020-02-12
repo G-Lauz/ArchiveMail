@@ -204,17 +204,9 @@ class GmailReader(QObject):
                 return self._html2string(msg.get_payload(decode=True).decode('latin-1'))
 
     def _getdata(self, msg, to_delete=None):
-        if msg.is_multipart():
-            if len(list(msg.walk())) >= 3 + 1:  #TROUVER UNE MEILLEUR SOLUTION
-                message = self._readType(list(msg.walk())[3])
-                listLine = message.splitlines()
-            else:
-                return None
-        else:
+        listLine, message = self.getdataList(msg)
+        if(listLine is None):
             return None
-
-        #for i, item in enumerate(listLine):
-        #    print(str(i) + " ..... " + item)
 
         for id in self.sites.getChildId(self.sites.root):
             childs = self.sites.getChildTextbyId(id)
@@ -239,9 +231,7 @@ class GmailReader(QObject):
                 listLine = message.splitlines()
             else:
                 return None
-
-            return listLine
-
+            return listLine, message
         else:
             return None
 
