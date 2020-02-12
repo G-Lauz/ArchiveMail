@@ -17,8 +17,10 @@ class mainGUI(QMainWindow):
     sig_getMsgList = Signal()
     sig_receivedMsgList = Signal(appdata.Array)
 
-    def __init__(self):
-        super(mainGUI, self).__init__()
+    aboutToClose = Signal()
+
+    def __init__(self, parent=None):
+        super(mainGUI, self).__init__(parent)
 
         log.log_init_object(self)
 
@@ -37,6 +39,10 @@ class mainGUI(QMainWindow):
 
     def __str__(self):
         return str(self.__class__)
+
+    def closeEvent(self,event):
+        self.aboutToClose.emit()
+        event.accept()
 
     def createActions(self):
         self.readAct = QAction("&Lire",statusTip="un test",

@@ -9,7 +9,7 @@ import utils.emailreader as GmailReader
 from utils.threadpool import CustomThread
 import utils.log as log
 
-import ctypes #Couleur cmd
+import ctypes #Color cmd
 
 class Main(QObject):
     #Define Signal
@@ -17,7 +17,7 @@ class Main(QObject):
     def __init__(self, parent=None):
         super(self.__class__, self).__init__(parent)
 
-        # couleur cmd
+        # color cmd
         kernel32 = ctypes.windll.kernel32
         kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)
 
@@ -44,6 +44,7 @@ class Main(QObject):
         self.mainGUI.userEdited.connect(self.start)
         self.mainGUI.sig_readMail.connect(self.on_sig_readMail)
         self.mainGUI.sig_getMsgList.connect(self.on_getMsgList)
+        self.mainGUI.aboutToClose.connect(self.on_aboutToClose)
 
     #Init the program
     @Slot(str)
@@ -55,7 +56,7 @@ class Main(QObject):
     def createThread(self, user):
         # Add condition to select wich client to connect to
 
-        # setup de Email reader thread (main thread)
+        # setup de Email reader thread
         self.reader = GmailReader.GmailReader(user)
         self.reader_thread = CustomThread(name='reader_thread')
 
@@ -82,6 +83,13 @@ class Main(QObject):
     def on_receivedMsgList(self, alist):
         log.log_start_method(self, self.on_receivedMsgList)
         self.mainGUI.sig_receivedMsgList.emit(alist)
+
+    def on_aboutToClose(self):
+        if self.reader_thread:
+            self.reader_thread.quit()
+        if self.reader:
+            del self.reader
+        del self.mainGUI
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
