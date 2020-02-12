@@ -51,7 +51,6 @@ class readGUI(QWidget):
 
     @Slot(float)
     def setProgress(self, progress):
-        log.log_start_method(self, self.setProgress)
         self.progressBar.setValue(progress)
 
     @Slot(Exception)

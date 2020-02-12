@@ -3,7 +3,7 @@ from PySide2 import QtWidgets, QtGui, QtCore
 from PySide2.QtCore import QObject, Signal, Slot
 from PySide2.QtWidgets import (QWidget, QGridLayout, QComboBox, QPushButton,
     QLabel, QVBoxLayout, QHBoxLayout, QButtonGroup, QCheckBox, QFileDialog,
-    QGroupBox)
+    QGroupBox, QProgressBar)
 
 from utils.mycsv import csvManipulator
 from utils.dbsqlite import PostulantDB
@@ -11,6 +11,8 @@ from utils.appdata import Data
 import utils.log as log
 
 class commandGUI(QWidget):
+
+    updateProgress = Signal(float)
 
     def __init__(self, parent=None):
         QWidget.__init__(self,parent)
@@ -60,6 +62,14 @@ class commandGUI(QWidget):
         self.infoText = QLabel()
         self.infoText.setWordWrap(True)
         self.detailLayout.addWidget(self.infoText)
+
+        self.progressBar = QProgressBar()
+        self.progressBar.setMinimum(0)
+        self.progressBar.setMaximum(100)
+        self.progressBar.setTextVisible(True)
+        self.detailLayout.addWidget(self.progressBar)
+        self.updateProgress.connect(self.setProgress)
+
         self.detailGroup.setLayout(self.detailLayout)
 
         self.dateGroup = QGroupBox("Périodes")
@@ -122,24 +132,29 @@ class commandGUI(QWidget):
             if i.isChecked():
                 querry.append(Data().DICTINFO[i.text()])
 
+        self.infoText.setText("Exportation...")
         try:
             self._csv = csvManipulator(filename[0])
 
             fulldata = [tuple(querry)]
 
+            dataLen = len(table)
+
             if self.domaineComboBox.currentIndex() == 0:
-                for i in table:
-                    data = self._db.selectThese(i, querry)
+                for i, value in enumerate(table):
+                    data = self._db.selectThese(value, querry)
                     for j in data:
                         fulldata.append(j)
+                    self.updateProgress.emit(((i+1)/dataLen)*100)
             else:
-                for i in table:
+                for i, value in enumerate(table):
                     data = self._db.selectAValue(
-                        i, "INTERET", self.domaineComboBox.currentText(),
+                        value, "INTERET", self.domaineComboBox.currentText(),
                         col=querry
                     )
                     for j in data:
                         fulldata.append(j)
+                    self.updateProgress.emit(((i+1)/dataLen)*100)
 
             self._csv.write(fulldata)
 
@@ -162,11 +177,14 @@ class commandGUI(QWidget):
         filename = QFileDialog.getOpenFileName(self,
             "Open CSV", "data/", "CSV Files (*.csv)")
 
+        self.infoText.setText("Importation...")
         try:
             self._csv = csvManipulator(filename[0])
             aListOfDict = self._csv.read()
-            for i in aListOfDict:
-                self._storedata(i)
+            dataLen = len(aListOfDict)
+            for i, value in enumerate(aListOfDict):
+                self._storedata(value)
+                self.updateProgress.emit(((i+1)/dataLen)*100)
 
             self.infoText.setText("Importation de " + filename[0] + " réussi")
 
@@ -181,7 +199,6 @@ class commandGUI(QWidget):
     def _storedata(self, adict : dict):
         if adict == None:
             return
-        self._db = PostulantDB()
         self._db.insert(**adict)
 
     def _getTables(self):
@@ -219,3 +236,7 @@ class commandGUI(QWidget):
             if i[13:] not in seen:
                 seen_add(i[13:])
                 yield Data().MOIS[int(i[13:])-1]
+
+    @Slot(float)
+    def setProgress(self, progress):
+        self.progressBar.setValue(progress)
