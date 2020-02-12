@@ -133,11 +133,6 @@ class GmailReader(QObject):
                         self._storedata(self._getdata(msg, index))
                     else:
                         self._storedata(self._getdata(msg))
-                    #self._getdata(msg)
-
-                    #for i in self._structure(msg):
-                    #    print(i)
-            #self.mail.expunge()
 
     @threaded
     def getMailsList(self, select="INBOX", critere="UNSEEN", callback=None):
@@ -168,23 +163,14 @@ class GmailReader(QObject):
     def getSubjects(self, messages):
         alist = []
         for msg in messages:
-            subject, encoding = decode_header(msg['subject'])[0]
-            if type(subject) is bytes:
-                #log.log_info(subject.decode(encoding))
-                if encoding:
-                    alist.append(subject.decode(encoding))
-            else:
-                #log.log_info(subject)
-                alist.append(subject)
+            alist.append(self.getSubject(msg))
         return alist
 
     def getSubject(self, msg):
         subject, encoding = decode_header(msg['subject'])[0]
         if type(subject) is bytes:
-            #log.log_info(subject.decode(encoding))
             return subject.decode(encoding)
         else:
-            #log.log_info(subject)
             return subject
 
     def _html2string(self, payload):
