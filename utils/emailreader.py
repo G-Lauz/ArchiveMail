@@ -134,10 +134,25 @@ class GmailReader(QObject):
                     else:
                         self._storedata(self._getdata(msg))
 
+        #def store(msg, index, delete=delete):
+        #    if delete:
+        #        self._storedata(self._getdata(msg, index))
+        #    else:
+        #        self._storedata(self._getdata(msg))
+
+        #alist, index = self._parseMail(select, critere, callback)
+        #map(lambda x,y:store(x,y,delete=delete), alist, index)
+
+
     @threaded
     def getMailsList(self, select="INBOX", critere="UNSEEN", callback=None):
         log.log_start_method(self, self.getMailsList)
-        alist = []
+        alist = self._parseMail(select, critere, callback)
+        self.sig_receivedMsgList.emit(alist)
+
+    def _parseMail(self, select="INBOX", critere="ALL", callback=None):
+        msgList = []
+        indexList = []
         rv, data = self.mail.select(select, readonly=True)
 
         if rv == 'OK':
@@ -150,15 +165,17 @@ class GmailReader(QObject):
                 raise Exception("Auncun message")
 
             for i,index in enumerate(data[0].split()):
+                self.updateProgress.emit(((i+1)/dataLen)*100)
+
                 rv, data = self.mail.fetch(index, "(RFC822)")
                 if rv != 'OK':
-
                     raise Exception("Erreur en lisant le message {}".format(index))
 
                 msg = email.message_from_bytes(data[0][1]) #MESSAGE
-                alist.append(msg)
+                msgList.append(msg)
+                indexList.append(index)
 
-        self.sig_receivedMsgList.emit(alist)
+            return msgList#, index
 
     def getSubjects(self, messages):
         alist = []
@@ -212,7 +229,6 @@ class GmailReader(QObject):
             childs = self.sites.getChildTextbyId(id)
             if childs['site'] in message:
                 if to_delete:
-                    log.log_info('deletion of {}'.format(to_delete))
                     self.mail.store(to_delete, '+X-GM-LABELS', '\\Trash')
                 return appdata.Bunch(
                     email= listLine[childs['email']],
@@ -311,9 +327,6 @@ class GmailReader(QObject):
     def _get_user(self):
         return self._user
 
-    #def _get_updateProgress(self):
-    #    return self._updateProgress
-
     #===========================================================================
     # set
     #===========================================================================
@@ -329,9 +342,6 @@ class GmailReader(QObject):
     def _set_user(self, user):
         self._user = user
 
-    #def _set_updateProgress(self, signal):
-    #    self._updateProgress = signal
-
     #===========================================================================
     # Propriété
     #===========================================================================
@@ -344,7 +354,6 @@ class GmailReader(QObject):
     credentials = property(fget=_get_credentials, fset=_set_credentials)
     mail = property(fget=_get_mail, fset=_set_mail)
     user = property(fget=_get_user, fset=_set_user)
-    #updateProgress = property(fget=_get_updateProgress,fset=_set_updateProgress)
 
 if __name__ == "__main__":
     er = GmailReader(input("Username: "))
