@@ -1,7 +1,7 @@
 import sys
 from PySide2 import QtWidgets, QtGui, QtCore
 from PySide2.QtCore import QObject, Signal, Slot
-from PySide2.QtWidgets import QWidget, QLabel, QLineEdit
+from PySide2.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton
 
 import utils.log as log
 
@@ -18,11 +18,15 @@ class homeGUI(QWidget):
 
         self.userEdit = QLineEdit()
         self.userEdit.setPlaceholderText("exemple@gmail.com")
+        self.button = QPushButton("Continuer")
+
+        self.button.clicked.connect(self.openRead)
         self.userEdit.returnPressed.connect(self.openRead)
 
         layout = QtWidgets.QHBoxLayout()
         layout.addWidget(self.userText)
         layout.addWidget(self.userEdit)
+        layout.addWidget(self.button)
         self.setLayout(layout)
 
     def __del__(self):
