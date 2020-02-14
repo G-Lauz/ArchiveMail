@@ -52,6 +52,8 @@ class readGUI(QWidget):
     @Slot(float)
     def setProgress(self, progress):
         self.progressBar.setValue(progress)
+        if progress == 100:
+            self.detailText.setText("Lecture terminé!")
 
     @Slot(Exception)
     def setDetails(self, e):
