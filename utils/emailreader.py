@@ -242,14 +242,25 @@ class GmailReader(QObject):
     def getdataList(self, msg):
         log.log_start_method(self, self.getdataList)
         if msg.is_multipart():
-            if len(list(msg.walk())) >= 3 + 1:  #TROUVER UNE MEILLEUR SOLUTION
-                message = self._readType(list(msg.walk())[3])
-                listLine = message.splitlines()
-            else:
-                return None
+            message = ''
+            listLine = []
+            for i in list(msg.walk()):
+                if 'text/html' in i.get_content_type():
+                    message += self._readType(i)
+                    message += '\nENDL\n'
+
+            for i in message.splitlines():
+                if i == 'ENDL':
+                    listLine.append('-----------------------------------------')
+                else:
+                    listLine.append(i)
+
             return listLine, message
         else:
-            return None
+            message = self._readType(msg)
+            listLine = message.splitlines()
+            return listLine, message
+            #return None
 
     def _storedata(self, adict : dict):
         if adict == None:
