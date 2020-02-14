@@ -130,7 +130,7 @@ class GmailReader(QObject):
                     callback(msg);
                 else:
                     if delete:
-                        self._storedata(self._getdata(msg, index))
+                        self._storedata(self._getdata(msg, index, delete=True))
                     else:
                         self._storedata(self._getdata(msg))
 
@@ -220,16 +220,18 @@ class GmailReader(QObject):
             except UnicodeDecodeError:
                 return self._html2string(msg.get_payload(decode=True).decode('latin-1'))
 
-    def _getdata(self, msg, to_delete=None):
+    def _getdata(self, msg, emailID=None, delete=False):
         listLine, message = self.getdataList(msg)
         if(listLine is None):
             return None
 
+        self.mail.store(emailID, '-FLAGS', '\\Seen')
+
         for id in self.sites.getChildId(self.sites.root):
             childs = self.sites.getChildTextbyId(id)
             if childs['site'] in message:
-                if to_delete:
-                    self.mail.store(to_delete, '+X-GM-LABELS', '\\Trash')
+                if delete:
+                    self.mail.store(emailID, '+X-GM-LABELS', '\\Trash')
                 return appdata.Bunch(
                     email= listLine[childs['email']],
                     sexe= self._defineSexe(listLine[childs['prenom']].strip(":").strip()),
