@@ -8,6 +8,8 @@ secret
 build
 dist
 setup.py
-mainGUI.spec
+main.spec
 .venv
 activate.bat
+MANIFEST.in
+CHANGES.md
