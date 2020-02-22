@@ -3,7 +3,7 @@ import sys, traceback
 from PySide2 import QtWidgets, QtGui, QtCore
 from PySide2.QtCore import QObject, Signal, Slot
 from PySide2.QtWidgets import (QWidget, QVBoxLayout, QPushButton, QProgressBar,
-    QLabel)
+    QLabel, QGroupBox)
 
 from utils.emailreader import GmailReader
 import utils.log as log
@@ -26,16 +26,17 @@ class readGUI(QWidget):
         self.progressBar.setMaximum(100)
         self.progressBar.setTextVisible(True)
 
-        self.detailTitle = QLabel("Détails :")
-
+        self.detailGroup = QGroupBox("Détails")
+        self.detailLayout = QVBoxLayout()
         self.detailText = QLabel(" ")
         self.detailText.setWordWrap(True)
+        self.detailLayout.addWidget(self.detailText)
+        self.detailGroup.setLayout(self.detailLayout)
 
         layout = QVBoxLayout()
         layout.addWidget(self.readButton)
         layout.addWidget(self.progressBar)
-        layout.addWidget(self.detailTitle)
-        layout.addWidget(self.detailText)
+        layout.addWidget(self.detailGroup)
         self.setLayout(layout)
 
         self._connectSignals()

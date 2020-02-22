@@ -3,7 +3,8 @@ from PySide2 import QtWidgets, QtGui, QtCore
 from PySide2.QtCore import QObject, Signal, Slot
 from PySide2.QtGui import QIntValidator
 from PySide2.QtWidgets import (QWidget, QPushButton, QLabel, QVBoxLayout,
-    QHBoxLayout, QMessageBox, QComboBox, QLineEdit, QScrollArea, QMessageBox)
+    QHBoxLayout, QMessageBox, QComboBox, QLineEdit, QScrollArea, QMessageBox,
+    QGroupBox)
 
 from utils.emailreader import GmailReader
 import utils.log as log
@@ -85,83 +86,91 @@ class addGUI(QWidget):
         self.layout = QVBoxLayout()
 
         # Layout de la barre de recherche de courriel
-        self.searchLayout = QHBoxLayout()
-        self.searchText = QLabel("Exemple de courriel à ouvrir:")
-        self.searchLayout.addWidget(self.searchText)
-
+        self.searchGroup = QGroupBox("Exemple de courriel à ouvrir:")
+        self.searchLayout = QVBoxLayout()
 
         self.mailsComboBox = QComboBox()
-        #self.sig_getMsgList.emit()
-        #for i in self.getMailsList():
-        #    self.mailsComboBox.addItem(i)
         self.searchLayout.addWidget(self.mailsComboBox)
-        #self.searchBar = QLineEdit("Objet")
-        #self.searchLayout.addWidget(self.searchBar)
+        self.searchGroup.setLayout(self.searchLayout)
 
 
-        #self.openButton = QPushButton("Ouvrir")
-        #self.openButton.clicked.connect(self.openMail)
-        #self.searchLayout.addWidget(self.openButton)
+        self.layout.addWidget(self.searchGroup)
 
-        self.layout.addLayout(self.searchLayout)
 
+        self.fieldGroup = QGroupBox("Infos:")
         # Layout de sélection de ligne
         self.selectionLayout = QHBoxLayout()
 
         # Layout des champs à entrer
+        self.descriptionLayout = QVBoxLayout()
         self.champLayout = QVBoxLayout()
 
         # Layout individuelle des champs
-        self.emailLayout = QHBoxLayout()
+        #self.emailLayout = QHBoxLayout()
         self.emailText = QLabel("Email:")
         self.emailBar = ClickableLineEdit()
         self.emailBar.clicked.connect(self.emailBar.clear)
         self.emailBar.setPlaceholderText("# de ligne")
         self.emailBar.setValidator(QIntValidator(0,1024,None))
-        self.emailLayout.addWidget(self.emailText)
-        self.emailLayout.addWidget(self.emailBar)
-        self.champLayout.addLayout(self.emailLayout)
+        #self.emailLayout.addWidget(self.emailText)
+        #self.emailLayout.addWidget(self.emailBar)
+        self.descriptionLayout.addWidget(self.emailText)
+        self.champLayout.addWidget(self.emailBar)
+        #self.champLayout.addLayout(self.emailLayout)
 
-        self.prenomLayout = QHBoxLayout()
+        #self.prenomLayout = QHBoxLayout()
         self.prenomText = QLabel("Prenom:")
         self.prenomBar = ClickableLineEdit()
         self.prenomBar.clicked.connect(self.prenomBar.clear)
         self.prenomBar.setPlaceholderText("# de ligne")
         self.prenomBar.setValidator(QIntValidator(0,1024,None))
-        self.prenomLayout.addWidget(self.prenomText)
-        self.prenomLayout.addWidget(self.prenomBar)
-        self.champLayout.addLayout(self.prenomLayout)
+        #self.prenomLayout.addWidget(self.prenomText)
+        #self.prenomLayout.addWidget(self.prenomBar)
+        #self.champLayout.addLayout(self.prenomLayout)
+        self.descriptionLayout.addWidget(self.prenomText)
+        self.champLayout.addWidget(self.prenomBar)
 
-        self.nomLayout = QHBoxLayout()
+        #self.nomLayout = QHBoxLayout()
         self.nomText = QLabel("Nom:")
         self.nomBar = ClickableLineEdit()
         self.nomBar.clicked.connect(self.nomBar.clear)
         self.nomBar.setPlaceholderText("# de ligne")
         self.nomBar.setValidator(QIntValidator(0,1024,None))
-        self.nomLayout.addWidget(self.nomText)
-        self.nomLayout.addWidget(self.nomBar)
-        self.champLayout.addLayout(self.nomLayout)
+        #self.nomLayout.addWidget(self.nomText)
+        #self.nomLayout.addWidget(self.nomBar)
+        #self.champLayout.addLayout(self.nomLayout)
+        self.descriptionLayout.addWidget(self.nomText)
+        self.champLayout.addWidget(self.nomBar)
 
-        self.interetLayout = QHBoxLayout()
+        #self.interetLayout = QHBoxLayout()
         self.interetText = QLabel("Intérêt:")
         self.interetBar = ClickableLineEdit()
         self.interetBar.clicked.connect(self.interetBar.clear)
         self.interetBar.setPlaceholderText("# de ligne")
         self.interetBar.setValidator(QIntValidator(0,1024,None))
-        self.interetLayout.addWidget(self.interetText)
-        self.interetLayout.addWidget(self.interetBar)
-        self.champLayout.addLayout(self.interetLayout)
+        #self.interetLayout.addWidget(self.interetText)
+        #self.interetLayout.addWidget(self.interetBar)
+        #self.champLayout.addLayout(self.interetLayout)
+        self.descriptionLayout.addWidget(self.interetText)
+        self.champLayout.addWidget(self.interetBar)
 
-        self.siteLayout = QHBoxLayout()
+        #self.siteLayout = QHBoxLayout()
         self.siteText = QLabel("Site:")
         self.siteBar = ClickableLineEdit()
         self.siteBar.clicked.connect(self.siteBar.clear)
         self.siteBar.setPlaceholderText("Nom ex: Jobboom")
-        self.siteLayout.addWidget(self.siteText)
-        self.siteLayout.addWidget(self.siteBar)
-        self.champLayout.addLayout(self.siteLayout)
+        #self.siteLayout.addWidget(self.siteText)
+        #self.siteLayout.addWidget(self.siteBar)
+        #self.champLayout.addLayout(self.siteLayout)
+        self.descriptionLayout.addWidget(self.siteText)
+        self.champLayout.addWidget(self.siteBar)
 
-        self.selectionLayout.addLayout(self.champLayout)
+        self.fieldLayout = QHBoxLayout()
+        self.fieldLayout.addLayout(self.descriptionLayout)
+        self.fieldLayout.addLayout(self.champLayout)
+        self.fieldGroup.setLayout(self.fieldLayout)
+
+        self.selectionLayout.addWidget(self.fieldGroup)
 
         self.scrollBox = ScrollQLabel(None)
         self.selectionLayout.addWidget(self.scrollBox)
