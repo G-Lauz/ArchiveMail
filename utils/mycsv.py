@@ -38,6 +38,6 @@ class csvManipulator():
         return self._filename
 
     def _set_filename(self, value : str):
-        self._filname = value
+        self._filename = value
 
-    filname = property(fget=_get_filename, fset=_set_filename)
+    filename = property(fget=_get_filename, fset=_set_filename)
