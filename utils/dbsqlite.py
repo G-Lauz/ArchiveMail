@@ -10,32 +10,32 @@ class PostulantDB():
     Classe définisant une base de donné de postulant
 
     Attributs publique:
-    - TABLENAME : str, nom de base des tables de données
-    - TABLETODAY : str, nom de la table du mois présent
-    - DBFILE : str, nom du fichier de la base de données
-    - EMAIL : str
-    - SEXE : str
-    - PRENOM : str
-    - NOM : str
-    - INTERET : str
-    - SITE : str
+    + TABLENAME : str, nom de base des tables de données
+    + TABLETODAY : str, nom de la table du mois présent
+    + DBFILE : str, nom du fichier de la base de données
+    + EMAIL : str
+    + SEXE : str
+    + PRENOM : str
+    + NOM : str
+    + INTERET : str
+    + SITE : str
 
     Méthodes publique:
-    - insert(email='', sexe='', prenom='', nom='', interet='', site='')
+    + insert(email='', sexe='', prenom='', nom='', interet='', site='')
         Insèrer des valeurs dans la table du mois présent
-    - select(table : str, data : str)
+    + select(table : str, data : str)
         Sélectionner et retourner une colonne de valeurs d'une table
-    - selectThese(table : str, data : list)
+    + selectThese(table : str, data : list)
         Sélectionner et retourner plusieurs colonne de valeurs d'une table
-    - selectAValue(table : str, type : str, data : str)
+    + selectAValue(table : str, type : str, data : str)
         Sélectionner et retourner tout les lignes contenant la valeur cherché
-    - countAValue(table : str, type : str, data : str)
+    + countAValue(table : str, type : str, data : str)
         Compte le nombre d'instance d'une valeur dans une table donnée
-    - deleteTable(tableName : str, year : int, month : int)
+    + deleteTable(tableName : str, year : int, month : int)
         Supprime une table de la base de données
-    - tableList()
+    + tableList()
         Retourne la liste des tables de la base de données
-    - close()
+    + close()
         Ferme la database
     """
 

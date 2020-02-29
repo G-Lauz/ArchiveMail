@@ -1,4 +1,42 @@
 class Data():
+    """
+    Classe utilitaire, permet de lire les fichier de Domaines
+
+    Membres publiques:
+    + SITE : list,
+    + INFO : list,
+    + DICTINFO : list,
+    + MOIS : list,
+    + DICTMOIS : list,
+    + ADMIN : list,
+    + MANUELS : list,
+    + GENIE : list,
+    + OP : list,
+    + MEDIC : list,
+    + TECH : list,
+
+    Méthodes publiques:
+    + readAdmin()
+        Retourne les métiers du domaine de l'administration soutien et services
+    + readGenie()
+        Retourne les métiers du domaine du Génie
+    + readManuels()
+        Retourne les métiers du domaine des métiers manuels
+    + readOp()
+        Retourne les métiers du domaine de l'opération tactiques et sécurité
+    + readMedic()
+        Retourne les métiers du domaine des soins de la santé
+    + readTech()
+        Retourne les métiers du domaine des Technologies
+    + readSite() -> (obsolète)
+        Retourne une liste de site internet contenu dans le fichier data/site.txt
+    + readInfo() -> (obsolète)
+        Retourne une list et une dictionnaire des informations contenu dans le
+        fichier data/info.txt
+    + readMois() -> (obsolète)
+        Retourne une list et une dictionnaire des mois contenu dans le
+        fichier data/mois.txt
+    """
     def readAdmin(self):
         with open("data/Domaines/Administration-soutien-et-services.txt",
             'r') as file:
@@ -101,11 +139,17 @@ class Data():
     TECH = property(fget=_get_tech)
 
 class Bunch(dict):
+    """
+    Objet dict
+    """
     def __init__(self, **kwargs):
         dict.__init__(self, kwargs)
         self.__dict__ = self
 
 class Array(list):
+    """
+    Objet list
+    """
     def __init__(self, **kwargs):
         list.__init__(self, kwargs)
         self.__list__ = self
