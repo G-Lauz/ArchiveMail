@@ -1,3 +1,4 @@
+# build with the following command: pyinstaller main.spec
 import sys
 
 from PySide2.QtCore import QObject, Signal, Slot, QThread
