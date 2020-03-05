@@ -11,6 +11,7 @@ from PySide2.QtCore import QObject, Signal, Slot
 from email.header import decode_header
 import string
 import csv
+import re
 
 from utils.threadpool import threaded
 import utils.appdata as appdata
@@ -18,6 +19,8 @@ from utils.appdata import Data
 from utils.dbsqlite import PostulantDB
 from utils.myxml import xmlManipulator
 import utils.log as log
+
+email_regex = r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"
 
 class GmailReader(QObject):
     """
@@ -327,7 +330,7 @@ class GmailReader(QObject):
                 if delete:
                     self.mail.store(emailID, '+X-GM-LABELS', '\\Trash')
                 return appdata.Bunch(
-                    email= listLine[childs['email']],
+                    email= re.search(email_regex, listLine[childs['email']]).group(),
                     sexe= self._defineSexe(listLine[childs['prenom']].strip(":").strip()),
                     prenom= listLine[childs['prenom']].strip(":").strip(),
                     nom= listLine[childs['nom']].strip(":").strip(),
