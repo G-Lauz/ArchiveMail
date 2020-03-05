@@ -16,7 +16,7 @@ class csvManipulator():
 
     def write(self, items):
         with open(self.filename, 'w', newline='') as csvfile:
-            writer = csv.writer(csvfile, delimiter=';', quotechar='|',
+            writer = csv.writer(csvfile, delimiter=',', quotechar='|',
                 quoting=csv.QUOTE_MINIMAL)
             writer.writerows(items)
             csvfile.close()
