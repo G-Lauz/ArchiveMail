@@ -83,7 +83,7 @@ class stackedGUI(QStackedWidget):
         self.sig_readMail.emit(select, critere)
 
     def on_updateProgress(self, progress):
-        log.log_start_method(self, self.on_updateProgress)
+        #log.log_start_method(self, self.on_updateProgress)
         self.read.updateProgress.emit(progress)
         self.add.updateProgress.emit(progress)
 

@@ -73,7 +73,7 @@ class Main(QObject):
         self.reader.sig_readMail.emit(select, critere)
 
     def on_updateProgress(self, progress):
-        log.log_start_method(self, self.on_updateProgress)
+        #log.log_start_method(self, self.on_updateProgress)
         self.mainGUI.updateProgress.emit(progress)
 
     def on_getMsgList(self):
