@@ -19,6 +19,7 @@ class stackedGUI(QStackedWidget):
     updateProgress = Signal(float)
     sig_getMsgList = Signal()
     sig_receivedMsgList = Signal(appdata.Array)
+    enableAction = Signal()
 
     def __init__(self, parent=None):
         QStackedWidget.__init__(self,parent)
@@ -65,12 +66,17 @@ class stackedGUI(QStackedWidget):
         self.setCurrentWidget(self.read)
 
     def _connectSignals(self):
+        self.home.enableAction.connect(self.on_enableAction)
         self.home.userEdited.connect(self.openReadWithUser)
         self.read.sig_readMail.connect(self.on_sig_readMail)
         self.add.sig_getMsgList.connect(self.on_getMsgList)
 
         self.sig_receivedMsgList.connect(self.on_receivedMsgList)
         self.updateProgress.connect(self.on_updateProgress)
+
+    def on_enableAction(self):
+        log.log_start_method(self, self.on_enableAction)
+        self.enableAction.emit()
 
     def on_sig_readMail(self, select=None, critere=None):
         log.log_start_method(self, self.on_sig_readMail)

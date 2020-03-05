@@ -11,6 +11,7 @@ import utils.appdata as appdata
 
 class mainGUI(QMainWindow):
     #Define signal
+    enableAction = Signal()
     userEdited = Signal(str)
     sig_readMail = Signal(str, str)
     updateProgress = Signal(float)
@@ -47,24 +48,34 @@ class mainGUI(QMainWindow):
     def createActions(self):
         self.readAct = QAction("&Lire",statusTip="un test",
             triggered=self.stacked.openRead)
+        self.readAct.setDisabled(True)
         self.exportAct = QAction("&Exporter / Importer",statusTip="un test",
             triggered=self.stacked.openCommand)
+        self.exportAct.setDisabled(True)
         self.addAct = QAction("&Ajouter un site", statusTip="un test",
             triggered=self.stacked.openAddSite)
+        self.addAct.setDisabled(True)
 
     def createMenus(self):
-        self.fileMenu = self.menuBar().addMenu("&File")
+        self.fileMenu = self.menuBar().addMenu("&Fichier")
         self.fileMenu.addAction(self.readAct)
         self.fileMenu.addAction(self.exportAct)
         self.fileMenu.addAction(self.addAct)
 
     def _connectSignals(self):
+        self.stacked.enableAction.connect(self.on_enableAction)
         self.stacked.userEdited.connect(self.on_userEdited)
         self.stacked.sig_readMail.connect(self.on_sig_readMail)
         self.stacked.sig_getMsgList.connect(self.on_getMsgList)
 
         self.sig_receivedMsgList.connect(self.on_receivedMsgList)
         self.updateProgress.connect(self.on_updateProgress)
+
+    def on_enableAction(self):
+        log.log_start_method(self, self.on_enableAction)
+        self.readAct.setDisabled(False)
+        self.exportAct.setDisabled(False)
+        self.addAct.setDisabled(False)
 
     def on_userEdited(self, user):
         log.log_start_method(self, self.on_userEdited)

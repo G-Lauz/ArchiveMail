@@ -8,6 +8,7 @@ import utils.log as log
 class homeGUI(QWidget):
 
     userEdited = Signal(str)
+    enableAction = Signal()
 
     def __init__(self, parent=None):
         QWidget.__init__(self,parent)
@@ -38,6 +39,7 @@ class homeGUI(QWidget):
     def openRead(self):
         log.log_start_method(self, self.openRead)
         user = self.userEdit.text()
+        self.enableAction.emit()
         self.userEdited.emit(user)
 
     #class Communicate(QtCore.QObject):
