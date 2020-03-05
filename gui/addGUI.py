@@ -4,7 +4,7 @@ from PySide2.QtCore import QObject, Signal, Slot
 from PySide2.QtGui import QIntValidator
 from PySide2.QtWidgets import (QWidget, QPushButton, QLabel, QVBoxLayout,
     QHBoxLayout, QMessageBox, QComboBox, QLineEdit, QScrollArea, QMessageBox,
-    QGroupBox)
+    QGroupBox, QProgressBar)
 
 from utils.emailreader import GmailReader
 import utils.log as log
@@ -63,6 +63,7 @@ class ClickableLineEdit(QLineEdit):
 class addGUI(QWidget):
     sig_getMsgList = Signal()
     sig_receivedMsgList = Signal(appdata.Array)
+    updateProgress = Signal(float)
 
     def __init__(self, parent=None):
         QWidget.__init__(self,parent)
@@ -91,6 +92,13 @@ class addGUI(QWidget):
 
         self.mailsComboBox = QComboBox()
         self.searchLayout.addWidget(self.mailsComboBox)
+
+        self.progressBar = QProgressBar()
+        self.progressBar.setMinimum(0)
+        self.progressBar.setMaximum(100)
+        self.progressBar.setTextVisible(True)
+        self.searchLayout.addWidget(self.progressBar)
+
         self.searchGroup.setLayout(self.searchLayout)
 
 
@@ -185,6 +193,7 @@ class addGUI(QWidget):
         self.setLayout(self.layout)
 
     def _connectSignals(self):
+        self.updateProgress.connect(self.setProgress)
         self.sig_receivedMsgList.connect(self.buildComboBox)
         self.mailsComboBox.currentTextChanged.connect(self.openMail)
 
@@ -232,6 +241,11 @@ class addGUI(QWidget):
         self.interetBar.clear()
         self.siteBar.clear()
 
+    @Slot(float)
+    def setProgress(self, progress):
+        self.progressBar.setValue(progress)
+        if progress == 100:
+            pass
 
 if __name__ == "__main__":
    app = QApplication(sys.argv)

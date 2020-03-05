@@ -85,6 +85,7 @@ class stackedGUI(QStackedWidget):
     def on_updateProgress(self, progress):
         log.log_start_method(self, self.on_updateProgress)
         self.read.updateProgress.emit(progress)
+        self.add.updateProgress.emit(progress)
 
     def on_getMsgList(self):
         log.log_start_method(self, self.on_getMsgList)
